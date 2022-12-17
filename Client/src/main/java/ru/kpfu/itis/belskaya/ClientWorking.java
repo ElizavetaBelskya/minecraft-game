@@ -1,5 +1,6 @@
 package ru.kpfu.itis.belskaya;
 
+import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.protocol.messages.Message;
 
 public interface ClientWorking {

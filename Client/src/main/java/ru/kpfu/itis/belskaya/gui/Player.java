@@ -42,5 +42,8 @@ public class Player extends JBlock {
     }
 
 
-
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

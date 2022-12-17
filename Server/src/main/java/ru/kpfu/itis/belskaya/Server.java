@@ -13,7 +13,6 @@ import java.util.List;
 
 public class Server implements ServerWorking {
     private List<Connection> connections;
-
     private List<PlayerEntity> players;
     private int connectionCounter = 0;
     protected List<ServerEventListener> listeners;
@@ -25,6 +24,7 @@ public class Server implements ServerWorking {
         connections = new ArrayList<>();
         players = new ArrayList<>();
         this.listeners = new ArrayList<>();
+        //TODO: register listeners
         this.started = false;
     }
 
@@ -60,8 +60,30 @@ public class Server implements ServerWorking {
         return players;
     }
 
+    public int getPlayerIndex(int connectionId) {
+        int index = -1;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getId() == connectionId) {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
     public void addPlayer(PlayerEntity player) {
         players.add(player);
+    }
+
+    public void removePlayer(PlayerEntity player) {
+        players.remove(player);
+    }
+
+    public void changedPlayerCoordinates(int playerId, int xCoordinate, int yCoordinate) {
+        int index = getPlayerIndex(playerId);
+        PlayerEntity player = players.get(index);
+        player.setxCoordinate(xCoordinate);
+        player.setyCoordinate(yCoordinate);
     }
     public void init() throws ServerException {
         server = null;
@@ -77,11 +99,5 @@ public class Server implements ServerWorking {
             throw new ServerException(e);
         }
     }
-
-
-
-
-
-
 
 }

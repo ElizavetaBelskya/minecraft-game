@@ -1,7 +1,7 @@
 package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.Client;
-import ru.kpfu.itis.belskaya.ClientException;
+import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageDeleteBlock;
 import ru.kpfu.itis.belskaya.protocol.messages.MessagePutBlock;
 import ru.kpfu.itis.belskaya.protocol.messages.MessagePutPlayer;
@@ -17,22 +17,16 @@ public class GameFrame extends JFrame {
     public GameFrame(Client client) {
         this.client = client;
     }
-
     private Player mainPlayer;
-
     private final static int DEFAULT_WIDTH = 600;
     private final static int DEFAULT_HEIGHT = 500;
-
     private Client client;
-
     private GameListener listener;
-
     private int blockId = 1;
-
     private MinecraftPanel minecraftPanel;
     private static final String TITLE = "Minecraft";
-
     private GamePadPanel gamePadPanel;
+
     public void createGUI() {
         setTitle(TITLE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -69,7 +63,6 @@ public class GameFrame extends JFrame {
         getContentPane().add(minecraftPanel, constraints);
     }
 
-
     public void initMainPlayer(int id) {
         mainPlayer = minecraftPanel.getPlayerById(id);
     }
@@ -84,11 +77,6 @@ public class GameFrame extends JFrame {
 
     public MinecraftPanel getMinecraftPanel() {
         return minecraftPanel;
-    }
-
-    @Override
-    public void paintComponents(Graphics g) {
-        super.paintComponents(g);
     }
 
     public void setBlockId(int blockId) {
@@ -148,7 +136,7 @@ public class GameFrame extends JFrame {
                 switch (key) {
                     case KeyEvent.VK_LEFT:
                         movePlayerLeft(mainPlayer);
-                        MessagePutPlayer message = new MessagePutPlayer(mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
+                        MessagePutPlayer message = new MessagePutPlayer(mainPlayer.getId(), mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -157,7 +145,7 @@ public class GameFrame extends JFrame {
                         break;
                     case KeyEvent.VK_RIGHT:
                         movePlayerRight(mainPlayer);
-                        message = new MessagePutPlayer(mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
+                        message = new MessagePutPlayer(mainPlayer.getId(), mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -166,7 +154,7 @@ public class GameFrame extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         movePlayerUp(mainPlayer);
-                        message = new MessagePutPlayer(mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
+                        message = new MessagePutPlayer(mainPlayer.getId(), mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -175,7 +163,7 @@ public class GameFrame extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         movePlayerDown(mainPlayer);
-                        message = new MessagePutPlayer(mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
+                        message = new MessagePutPlayer(mainPlayer.getId(), mainPlayer.getXCoordinate(), mainPlayer.getYCoordinate());
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {

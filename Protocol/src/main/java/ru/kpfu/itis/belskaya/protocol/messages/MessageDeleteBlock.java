@@ -1,6 +1,5 @@
 package ru.kpfu.itis.belskaya.protocol.messages;
 
-import ru.kpfu.itis.belskaya.protocol.messages.Message;
 
 public class MessageDeleteBlock extends Message {
     private int xCoordinate;

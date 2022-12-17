@@ -18,7 +18,6 @@ public class OutputService {
     }
 
     public void writeMessage(Message message) throws MessageWorkException {
-        System.out.println(out.toString());
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(out);
             objectOutputStream.writeByte(PROTOCOL_VERSION[0]);

@@ -130,5 +130,13 @@ public class JBlock extends JPanel {
         return resLink;
     }
 
-
+    @Override
+    public String toString() {
+        return "JBlock{" +
+                "id=" + id +
+                ", xCoordinate=" + xCoordinate +
+                ", yCoordinate=" + yCoordinate +
+                ", block=" + block +
+                '}';
+    }
 }

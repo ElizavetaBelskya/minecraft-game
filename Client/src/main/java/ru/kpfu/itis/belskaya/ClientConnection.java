@@ -1,5 +1,6 @@
 package ru.kpfu.itis.belskaya;
 
+import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.protocol.InputService;
 import ru.kpfu.itis.belskaya.protocol.OutputService;
 

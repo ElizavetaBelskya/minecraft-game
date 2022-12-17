@@ -5,15 +5,7 @@ public class MessagePutPlayer extends Message {
     private static final byte TYPE = 1;
     private int playerId;
     private int xCoordinate;
-
     private int yCoordinate;
-
-    public MessagePutPlayer(int xCoordinate, int yCoordinate) {
-        super(1);
-        this.xCoordinate = xCoordinate;
-        this.yCoordinate = yCoordinate;
-    }
-
     public MessagePutPlayer(int playerId, int xCoordinate, int yCoordinate) {
         super(1);
         this.playerId = playerId;

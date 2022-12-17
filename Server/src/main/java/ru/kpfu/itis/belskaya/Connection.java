@@ -14,7 +14,6 @@ import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Random;
 
 public class Connection implements Runnable {
 
@@ -42,9 +41,9 @@ public class Connection implements Runnable {
             int randomY = 0 + (int)(Math.random() * 30);
             PlayerEntity player = new PlayerEntity(connectionId, randomX, randomY);
             server.addPlayer(player);
+
             MessageJoinGame messageJoinGame = new MessageJoinGame(server.getPlayers(), connectionId);
             JoinListener join = new JoinListener();
-
             join.init(server);
             join.handle(connectionId, messageJoinGame);
 

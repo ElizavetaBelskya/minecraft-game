@@ -1,5 +1,6 @@
 package ru.kpfu.itis.belskaya;
 
+import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
 import ru.kpfu.itis.belskaya.protocol.messages.Message;
