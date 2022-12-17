@@ -1,5 +1,6 @@
 package ru.kpfu.itis.belskaya.gui;
 
+import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
 
 import java.awt.*;
@@ -12,14 +13,14 @@ public class MinecraftPanel extends MapPanel {
 
     private GameFrame frame;
 
-    private ArrayList<Player> players = new ArrayList<Player>();
+    private ArrayList<PlayerJComponent> playerJComponents = new ArrayList<PlayerJComponent>();
 
     private final Color GRASS = new Color(0,80,0);
 
-    private ArrayList<JBlock> blocks = new ArrayList<JBlock>();
+    private ArrayList<JBlockPanel> blocks = new ArrayList<JBlockPanel>();
 
-    public Player getPlayerById(int id) {
-        return players.stream().filter(x -> x.getId() == id).findFirst().get();
+    public PlayerJComponent getPlayerById(int id) {
+        return playerJComponents.stream().filter(x -> x.getPlayerId() == id).findFirst().get();
     }
 
     public MinecraftPanel(GameFrame frame) {
@@ -38,38 +39,38 @@ public class MinecraftPanel extends MapPanel {
     }
 
     public void putPlayer(int playerId, int x, int y) {
-        Player player = getPlayerById(playerId);
-        player.setXCoordinate(x);
-        player.setYCoordinate(y);
+        PlayerJComponent playerJComponent = getPlayerById(playerId);
+        playerJComponent.setXCoordinate(x);
+        playerJComponent.setYCoordinate(y);
         repaint();
     }
 
-    public void initPlayer(List<PlayerEntity> playersChanged) {
-        players = new ArrayList<>();
+    public void initPlayer(List<PlayerEntity> playersChanged) throws ResourceLoadingException {
+        playerJComponents = new ArrayList<>();
 
         for (PlayerEntity playerEntity : playersChanged) {
-            Player player = new Player(playerEntity.getId(), playerEntity.getxCoordinate(), playerEntity.getyCoordinate());
-            players.add(player);
+            PlayerJComponent playerJComponent = new PlayerJComponent(playerEntity.getId(), playerEntity.getxCoordinate(), playerEntity.getyCoordinate());
+            playerJComponents.add(playerJComponent);
         }
         repaint();
     }
 
-    private void setBlockLocation(JBlock blockEntity) {
+    private void setBlockLocation(PlayableJComponent blockEntity) {
         int x = blockEntity.getXCoordinate()*getCellWidth();
         int y = blockEntity.getYCoordinate()*getCellHeight();
         blockEntity.setSize(getCellWidth(), getCellHeight());
         blockEntity.setLocation(x, y);
     }
 
-    public void putBlock(JBlock block) {
+    public void putBlock(JBlockPanel block) {
         add(block);
         blocks.add(block);
         setBlockLocation(block);
     }
 
     public void destroyBlock(int x, int y) {
-        if (findComponentAt(x*getCellWidth(), y*getCellHeight()) instanceof JBlock) {
-            JBlock removedBlock = (JBlock) findComponentAt(x*getCellWidth(), y*getCellHeight());
+        if (findComponentAt(x*getCellWidth(), y*getCellHeight()) instanceof JBlockPanel) {
+            JBlockPanel removedBlock = (JBlockPanel) findComponentAt(x*getCellWidth(), y*getCellHeight());
             remove(removedBlock);
             blocks.remove(removedBlock);
             validate();
@@ -80,12 +81,12 @@ public class MinecraftPanel extends MapPanel {
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        for (Player p : players) {
+        for (PlayerJComponent p : playerJComponents) {
             add(p);
             setBlockLocation(p);
         }
 
-        for (JBlock block : blocks) {
+        for (JBlockPanel block : blocks) {
             add(block);
             setBlockLocation(block);
         }
@@ -93,8 +94,8 @@ public class MinecraftPanel extends MapPanel {
     }
 
 
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public ArrayList<PlayerJComponent> getPlayers() {
+        return playerJComponents;
     }
 
 

@@ -1,7 +1,8 @@
 package ru.kpfu.itis.belskaya;
 
+import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
-import ru.kpfu.itis.belskaya.gui.JBlock;
+import ru.kpfu.itis.belskaya.gui.JBlockPanel;
 import ru.kpfu.itis.belskaya.protocol.InputService;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
@@ -35,7 +36,7 @@ public class MessageProcessor implements Runnable {
                     }
                     case 2: {
                         MessagePutBlock messagePutBlock = (MessagePutBlock) message;
-                        JBlock block = new JBlock(messagePutBlock.getBlockId(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
+                        JBlockPanel block = new JBlockPanel(messagePutBlock.getBlockId(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
                         frame.getMinecraftPanel().putBlock(block);
                         break;
                     }
@@ -57,10 +58,8 @@ public class MessageProcessor implements Runnable {
                 }
 
             }
-        } catch (MessageWorkException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedProtocolException e) {
-            throw new RuntimeException(e);
+        } catch (MessageWorkException | ResourceLoadingException | UnsupportedProtocolException e) {
+            frame.showErrorMessageDialog(e.getMessage());
         }
     }
 

@@ -1,5 +1,8 @@
 package ru.kpfu.itis.belskaya.gui;
 
+import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
+import ru.kpfu.itis.belskaya.helpers.ImageLoader;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,13 +26,19 @@ public class GamePadPanel extends JPanel {
             JButton button = new JButton();
             button.setFocusable(false);
             int finalI = i;
+
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     frame.setBlockId(finalI);
                 }
             });
-            button.add(new JBlock(i));
+
+            try {
+                button.add(new JBlockPanel(i));
+            } catch (ResourceLoadingException e) {
+                throw new RuntimeException(e);
+            }
             blockPanel.add(button);
         }
         add(blockPanel, constraints);
