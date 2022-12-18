@@ -22,7 +22,6 @@ public class OutputService {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(out);
             objectOutputStream.writeByte(PROTOCOL_VERSION[0]);
             objectOutputStream.writeByte(PROTOCOL_VERSION[1]);
-            objectOutputStream.writeInt(message.getMessageType());
             objectOutputStream.writeObject(message);
         } catch (IOException e) {
             throw new MessageWorkException("Error sending the message", e);

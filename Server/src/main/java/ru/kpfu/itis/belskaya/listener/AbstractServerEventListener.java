@@ -2,7 +2,7 @@ package ru.kpfu.itis.belskaya.listener;
 
 import ru.kpfu.itis.belskaya.Server;
 
-public abstract class AbstractServerEventListener implements ServerEventListener{
+public abstract class AbstractServerEventListener implements ServerEventListener {
 
     protected boolean init;
     protected Server server;

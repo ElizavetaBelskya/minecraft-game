@@ -6,8 +6,8 @@ public class MessagePutPlayer extends Message {
     private int playerId;
     private int xCoordinate;
     private int yCoordinate;
-    public MessagePutPlayer(int playerId, int xCoordinate, int yCoordinate) {
-        super(1);
+    public MessagePutPlayer(int playerId, int xCoordinate, int yCoordinate, int roomId, int connectionId) {
+        super(MessageTypes.PUT_PLAYER_MESSAGE, roomId, connectionId);
         this.playerId = playerId;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;

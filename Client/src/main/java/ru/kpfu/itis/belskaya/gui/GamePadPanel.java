@@ -1,7 +1,7 @@
 package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
-import ru.kpfu.itis.belskaya.helpers.ImageLoader;
+import ru.kpfu.itis.belskaya.protocol.BlockType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,20 +22,19 @@ public class GamePadPanel extends JPanel {
         constraints.gridx = 0;
         constraints.gridy = 0;
         constraints.anchor = GridBagConstraints.LINE_START;
-        for (int i = 1; i < 9; i++) {
+        for (BlockType blockType: BlockType.values()) {
             JButton button = new JButton();
             button.setFocusable(false);
-            int finalI = i;
 
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    frame.setBlockId(finalI);
+                    frame.setBlockType(blockType);
                 }
             });
 
             try {
-                button.add(new JBlockPanel(i));
+                button.add(new JBlockPanel(blockType));
             } catch (ResourceLoadingException e) {
                 throw new RuntimeException(e);
             }

@@ -1,9 +1,9 @@
 package ru.kpfu.itis.belskaya;
 
 import ru.kpfu.itis.belskaya.listener.ServerEventListener;
-import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.messages.Message;
+import ru.kpfu.itis.belskaya.protocol.messages.MessagePutPlayer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server implements ServerWorking {
-    private List<Connection> connections;
-    private List<PlayerEntity> players;
+    private List<Room> rooms;
     private int connectionCounter = 0;
     protected List<ServerEventListener> listeners;
 
@@ -21,26 +20,26 @@ public class Server implements ServerWorking {
     protected boolean started;
     private int PORT = 8077;
     public Server() {
-        connections = new ArrayList<>();
-        players = new ArrayList<>();
+        rooms = new ArrayList<Room>();
         this.listeners = new ArrayList<>();
-        //TODO: register listeners
+        //TODO:register listeners
         this.started = false;
     }
 
-    @Override
-    public void sendMessage(int connectionId, Message message) throws ServerException {
-        if (!started){
-            throw new ServerException("Server hasn't been started yet.");
-        }
-
-        try {
-            Connection connection = connections.stream().filter(x -> x.getConnectionId() == connectionId).findFirst().get();
-            connection.getOutputService().writeMessage(message);
-        } catch (MessageWorkException e) {
-            throw new ServerException("Can't send message.", e);
-        }
-    }
+//    @Override
+//    public void sendMessage(int connectionId, Message message) throws ServerException {
+//        if (!started){
+//            throw new ServerException("Server hasn't been started yet.");
+//        }
+//
+//        try {
+//            Connection connection =
+//                    connections.stream().filter(x -> x.getConnectionId() == connectionId).findFirst().get();
+//            connection.getOutputService().writeMessage(message);
+//        } catch (MessageWorkException e) {
+//            throw new ServerException("Can't send message.", e);
+//        }
+//    }
 
     @Override
     public void sendBroadCastMessage(Message message) throws ServerException {
@@ -48,7 +47,9 @@ public class Server implements ServerWorking {
             throw new ServerException("Server hasn't been started yet.");
         }
         try{
-            for (Connection connection : connections){
+            int id = message.getRoomId();
+            Room room = rooms.get(id);
+            for (Connection connection : room.getRoomConnections()){
                 connection.getOutputService().writeMessage(message);
             }
         } catch (MessageWorkException e) {
@@ -56,35 +57,37 @@ public class Server implements ServerWorking {
         }
     }
 
-    public List<PlayerEntity> getPlayers() {
-        return players;
+//    public void addPlayer(PlayerEntity player) {
+//        players.add(player);
+//    }
+//
+//    public void removePlayer(PlayerEntity player) {
+//        players.remove(player);
+//    }
+
+
+    public void changedPlayerCoordinates(MessagePutPlayer messagePutPlayer) {
+        int id = messagePutPlayer.getRoomId();
+        Room room = rooms.get(id);
+        room.changedPlayerCoordinates(messagePutPlayer.getPlayerId(), messagePutPlayer.getxCoordinate(), messagePutPlayer.getyCoordinate());
     }
 
-    public int getPlayerIndex(int connectionId) {
-        int index = -1;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getId() == connectionId) {
-                index = i;
-                break;
+    public int findAvailableRoom() {
+        for (Room room: rooms) {
+            if (room.getCountOfPlayers() != Room.MAX_COUNT) {
+                return room.getRoomId();
             }
         }
-        return index;
+        Room room = new Room(rooms.size());
+        rooms.add(room);
+        return room.getRoomId();
     }
 
-    public void addPlayer(PlayerEntity player) {
-        players.add(player);
+    public Room getRoom(int roomId) {
+        return rooms.get(roomId);
     }
 
-    public void removePlayer(PlayerEntity player) {
-        players.remove(player);
-    }
 
-    public void changedPlayerCoordinates(int playerId, int xCoordinate, int yCoordinate) {
-        int index = getPlayerIndex(playerId);
-        PlayerEntity player = players.get(index);
-        player.setxCoordinate(xCoordinate);
-        player.setyCoordinate(yCoordinate);
-    }
     public void init() throws ServerException {
         server = null;
         try {
@@ -92,12 +95,16 @@ public class Server implements ServerWorking {
             started = true;
             while (true) {
                 Socket client = server.accept();
-                connections.add(new Connection(this, client, connectionCounter));
+                int roomId = findAvailableRoom();
+                Connection connection = new Connection(this, client, connectionCounter, roomId);
+                rooms.get(roomId).addConnection(connection);
                 connectionCounter++;
             }
         } catch (IOException e) {
             throw new ServerException(e);
         }
     }
+
+
 
 }

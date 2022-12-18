@@ -1,19 +1,20 @@
 package ru.kpfu.itis.belskaya.listener;
 
 import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
+import ru.kpfu.itis.belskaya.protocol.messages.MessageTypes;
 
 public class ListenerHandler {
 
-    public static ServerEventListener getListenerByType(int type) throws WrongMessageTypeException {
+    public static ServerEventListener getListenerByType(MessageTypes type) throws WrongMessageTypeException {
         ServerEventListener listener;
         switch (type) {
-            case 1:
+            case PUT_PLAYER_MESSAGE:
                 listener = new PutPlayerListener();
                 break;
-            case 2:
+            case PUT_BLOCK_MESSAGE:
                 listener = new PutBlockListener();
                 break;
-            case 3:
+            case DELETE_BLOCK_MESSAGE:
                 listener = new DeleteBlockListener();
                 break;
             default:

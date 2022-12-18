@@ -14,9 +14,9 @@ import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 public class Connection implements Runnable {
-
     private Socket socket;
     private Thread thread;
     private Server server;
@@ -24,12 +24,15 @@ public class Connection implements Runnable {
     private OutputService outputService;
     private int connectionId;
 
-    public Connection(Server server, Socket socket, int connectionId) throws IOException {
+    private int roomId;
+
+    public Connection(Server server, Socket socket, int connectionId, int roomId) throws IOException {
         this.socket = socket;
         this.server = server;
         this.inputService = new InputService(socket.getInputStream());
         this.outputService = new OutputService(socket.getOutputStream());
         this.connectionId = connectionId;
+        this.roomId = roomId;
         thread = new Thread(this);
         thread.start();
     }
@@ -37,23 +40,19 @@ public class Connection implements Runnable {
     public void run() {
         Message message;
         try {
-            int randomX = 0 + (int)(Math.random() * 30);
-            int randomY = 0 + (int)(Math.random() * 30);
-            PlayerEntity player = new PlayerEntity(connectionId, randomX, randomY);
-            server.addPlayer(player);
-
-            MessageJoinGame messageJoinGame = new MessageJoinGame(server.getPlayers(), connectionId);
+            List<PlayerEntity> players = server.getRoom(roomId).getPlayers();
+            MessageJoinGame messageJoinGame = new MessageJoinGame(players, roomId, connectionId);
             JoinListener join = new JoinListener();
             join.init(server);
-            join.handle(connectionId, messageJoinGame);
+            join.handle(messageJoinGame);
 
             while ((message = inputService.readMessage()) != null) {
                 ServerEventListener listener = ListenerHandler.getListenerByType(message.getMessageType());
                 listener.init(server);
-                listener.handle(connectionId, message);
+                listener.handle(message);
             }
 
-            //TODO: Обработка исключений, братан!
+            //TODO:Обработка исключений, братан!
         } catch (MessageWorkException e) {
             throw new RuntimeException(e);
         } catch (UnsupportedProtocolException e) {

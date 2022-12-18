@@ -7,11 +7,9 @@ import ru.kpfu.itis.belskaya.protocol.messages.MessagePutPlayer;
 public class PutPlayerListener extends AbstractServerEventListener {
 
     @Override
-    public void handle(int connectionId, Message message) throws ServerException {
+    public void handle(Message message) throws ServerException {
         MessagePutPlayer messagePutPlayer = (MessagePutPlayer) message;
-        server.changedPlayerCoordinates(messagePutPlayer.getPlayerId(),
-                messagePutPlayer.getxCoordinate(),
-                messagePutPlayer.getyCoordinate());
+        server.changedPlayerCoordinates(messagePutPlayer);
         server.sendBroadCastMessage(messagePutPlayer);
     }
 

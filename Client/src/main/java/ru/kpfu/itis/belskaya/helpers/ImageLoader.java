@@ -11,50 +11,16 @@ import java.net.URLDecoder;
 
 public class ImageLoader {
 
-
-
-    public static Image loadImage(int typeId) throws ResourceLoadingException {
+    public static Image loadImage(String fileLink) throws ResourceLoadingException {
         try {
-            Image img = ImageIO.read(new File(getImageResource(typeId)));
+            Image img = ImageIO.read(new File(getImageResource(fileLink)));
             return img;
         } catch (IOException e) {
             throw new ResourceLoadingException(e);
         }
     }
 
-    public static String getImageResource(int id) throws ResourceLoadingException {
-        String resource;
-        switch (id) {
-            case 0:
-                resource = "stiv.png";
-                break;
-            case 1:
-                resource = "amethyst.png";
-                break;
-            case 2:
-                resource = "brick.png";
-                break;
-            case 3:
-                resource = "dimond.png";
-                break;
-            case 4:
-                resource = "dirt.png";
-                break;
-            case 5:
-                resource = "lava.png";
-                break;
-            case 6:
-                resource = "redBrick.png";
-                break;
-            case 7:
-                resource = "stone.jpg";
-                break;
-            case 8:
-                resource = "tnt.png";
-                break;
-            default:
-                resource = "dirt.png";
-        }
+    public static String getImageResource(String resource) throws ResourceLoadingException {
         String resLink;
         try {
             resLink = URLDecoder.decode(ImageLoader.class.getClassLoader().getResource(resource).getPath(), "UTF-8");

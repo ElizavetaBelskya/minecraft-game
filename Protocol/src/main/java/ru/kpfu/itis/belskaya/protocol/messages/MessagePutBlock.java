@@ -1,26 +1,28 @@
 package ru.kpfu.itis.belskaya.protocol.messages;
 
+import ru.kpfu.itis.belskaya.protocol.BlockType;
+
 public class MessagePutBlock extends Message {
 
-    private int blockId;
+    private BlockType blockType;
 
     private int xCoordinate;
 
     private int yCoordinate;
 
-    public MessagePutBlock(int blockId, int xCoordinate, int yCoordinate) {
-        super(2);
-        this.blockId = blockId;
+    public MessagePutBlock(BlockType blockType, int xCoordinate, int yCoordinate, int roomId, int connectionId) {
+        super(MessageTypes.PUT_BLOCK_MESSAGE, roomId, connectionId);
+        this.blockType = blockType;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
 
-    public int getBlockId() {
-        return blockId;
+    public BlockType getBlockType() {
+        return blockType;
     }
 
-    public void setBlockId(int blockId) {
-        this.blockId = blockId;
+    public void setBlockType(BlockType blockType) {
+        this.blockType = blockType;
     }
 
     public int getxCoordinate() {
@@ -39,12 +41,5 @@ public class MessagePutBlock extends Message {
         this.yCoordinate = yCoordinate;
     }
 
-    @Override
-    public String toString() {
-        return "MessagePutBlock{" +
-                "blockId=" + blockId +
-                ", xCoordinate=" + xCoordinate +
-                ", yCoordinate=" + yCoordinate +
-                '}';
-    }
+
 }

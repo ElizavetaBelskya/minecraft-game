@@ -9,10 +9,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class ClientConnection {
-
     private Socket socket;
     private InputService inputService;
     private OutputService outputService;
+
+    private int roomId;
 
     public ClientConnection(InetAddress address, int port) throws ClientException {
         try {
@@ -25,12 +26,10 @@ public class ClientConnection {
     }
 
     public InputService getInputService() {
-        System.out.println(socket.isClosed());
         return inputService;
     }
 
     public OutputService getOutputService() {
-        System.out.println(socket.isClosed());
         return outputService;
     }
 
@@ -43,4 +42,11 @@ public class ClientConnection {
     }
 
 
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
+    public int getRoomId() {
+        return roomId;
+    }
 }

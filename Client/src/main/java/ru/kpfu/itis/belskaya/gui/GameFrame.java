@@ -2,6 +2,7 @@ package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.Client;
 import ru.kpfu.itis.belskaya.exceptions.ClientException;
+import ru.kpfu.itis.belskaya.protocol.BlockType;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageDeleteBlock;
 import ru.kpfu.itis.belskaya.protocol.messages.MessagePutBlock;
 import ru.kpfu.itis.belskaya.protocol.messages.MessagePutPlayer;
@@ -22,7 +23,7 @@ public class GameFrame extends JFrame {
     private final static int DEFAULT_HEIGHT = 500;
     private Client client;
     private GameListener listener;
-    private int blockId = 1;
+    private BlockType blockId = BlockType.STONE;
     private MinecraftPanel minecraftPanel;
     private static final String TITLE = "Minecraft";
     private GamePadPanel gamePadPanel;
@@ -79,7 +80,7 @@ public class GameFrame extends JFrame {
         return minecraftPanel;
     }
 
-    public void setBlockId(int blockId) {
+    public void setBlockType(BlockType blockId) {
         this.blockId = blockId;
     }
 
@@ -89,6 +90,9 @@ public class GameFrame extends JFrame {
     }
 
     private class GameListener implements KeyListener {
+        int roomId = client.getConnection().getRoomId();
+
+        int connectionId = mainPlayerJComponent.getPlayerId();
         @Override
         public void keyTyped(KeyEvent e) {
         }
@@ -104,8 +108,8 @@ public class GameFrame extends JFrame {
             if ((mods & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
                 switch (key) {
                     case KeyEvent.VK_A:
-                        MessageDeleteBlock message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate()-1, mainPlayerJComponent.getYCoordinate());
-                        //TODO: это что вообще
+                        MessageDeleteBlock message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate()-1, mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
+                        //TODO:это что вообще
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -113,7 +117,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_W:
-                        message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate() - 1);
+                        message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate() - 1, roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -121,7 +125,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_D:
-                        message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate()+1, mainPlayerJComponent.getYCoordinate());
+                        message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate()+1, mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -129,7 +133,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_S:
-                        message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate()+1);
+                        message = new MessageDeleteBlock(mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate()+1, roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -141,7 +145,7 @@ public class GameFrame extends JFrame {
                 switch (key) {
                     case KeyEvent.VK_LEFT:
                         movePlayerLeft(mainPlayerJComponent);
-                        MessagePutPlayer message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate());
+                        MessagePutPlayer message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -150,7 +154,7 @@ public class GameFrame extends JFrame {
                         break;
                     case KeyEvent.VK_RIGHT:
                         movePlayerRight(mainPlayerJComponent);
-                        message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate());
+                        message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -159,7 +163,7 @@ public class GameFrame extends JFrame {
                         break;
                     case KeyEvent.VK_UP:
                         movePlayerUp(mainPlayerJComponent);
-                        message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate());
+                        message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -168,7 +172,7 @@ public class GameFrame extends JFrame {
                         break;
                     case KeyEvent.VK_DOWN:
                         movePlayerDown(mainPlayerJComponent);
-                        message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate());
+                        message = new MessagePutPlayer(mainPlayerJComponent.getPlayerId(), mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(message);
                         } catch (ClientException ex) {
@@ -176,7 +180,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_A:
-                        MessagePutBlock messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate()-1, mainPlayerJComponent.getYCoordinate());
+                        MessagePutBlock messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate()-1, mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(messagePutBlock);
                         } catch (ClientException ex) {
@@ -184,7 +188,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_W:
-                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate()-1);
+                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate()-1, roomId, connectionId);
                         try {
                             client.sendMessage(messagePutBlock);
                         } catch (ClientException ex) {
@@ -192,7 +196,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_D:
-                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate()+1, mainPlayerJComponent.getYCoordinate());
+                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate()+1, mainPlayerJComponent.getYCoordinate(), roomId, connectionId);
                         try {
                             client.sendMessage(messagePutBlock);
                         } catch (ClientException ex) {
@@ -200,7 +204,7 @@ public class GameFrame extends JFrame {
                         }
                         break;
                     case KeyEvent.VK_S:
-                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate()+1);
+                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent.getXCoordinate(), mainPlayerJComponent.getYCoordinate()+1, roomId, connectionId);
                         try {
                             client.sendMessage(messagePutBlock);
                         } catch (ClientException ex) {

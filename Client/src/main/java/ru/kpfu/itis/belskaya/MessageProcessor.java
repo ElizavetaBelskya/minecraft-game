@@ -29,28 +29,30 @@ public class MessageProcessor implements Runnable {
         try {
             while ((message = inputService.readMessage()) != null) {
                 switch (message.getMessageType()) {
-                    case 1: {
+                    case PUT_PLAYER_MESSAGE: {
                         MessagePutPlayer messagePutPlayer = (MessagePutPlayer) message;
                         frame.getMinecraftPanel().putPlayer(messagePutPlayer.getPlayerId(), messagePutPlayer.getxCoordinate(), messagePutPlayer.getyCoordinate());
                         break;
                     }
-                    case 2: {
+                    case PUT_BLOCK_MESSAGE: {
                         MessagePutBlock messagePutBlock = (MessagePutBlock) message;
-                        JBlockPanel block = new JBlockPanel(messagePutBlock.getBlockId(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
+                        JBlockPanel block = new JBlockPanel(messagePutBlock.getBlockType(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
                         frame.getMinecraftPanel().putBlock(block);
                         break;
                     }
-                    case 3: {
+                    case DELETE_BLOCK_MESSAGE: {
                         MessageDeleteBlock messageDeleteBlock = (MessageDeleteBlock) message;
                         frame.getMinecraftPanel().destroyBlock(messageDeleteBlock.getxCoordinate(), messageDeleteBlock.getyCoordinate());
                         break;
                     }
-                    case 4: {
+                    case JOIN_MESSAGE: {
                         MessageJoinGame messageJoinGame = (MessageJoinGame) message;
                         frame.getMinecraftPanel().initPlayer(messageJoinGame.getPlayers());
                         if (!connected) {
+                            connection.setRoomId(message.getRoomId());
                             connected = true;
                             frame.initMainPlayer(messageJoinGame.getConnectionId());
+
                         }
                         frame.initGameListener();
                         break;

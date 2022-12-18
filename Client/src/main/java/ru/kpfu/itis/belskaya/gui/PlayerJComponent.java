@@ -2,6 +2,7 @@ package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.helpers.ImageLoader;
+import ru.kpfu.itis.belskaya.protocol.BlockType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -14,7 +15,7 @@ public class PlayerJComponent extends PlayableJComponent {
     private int playerId;
     private Image playerAvatar;
 
-
+    private final String playerFile = "stiv.png";
     public int getPlayerId() {
         return playerId;
     }
@@ -22,7 +23,7 @@ public class PlayerJComponent extends PlayableJComponent {
     PlayerJComponent(int playerId, int x, int y) throws ResourceLoadingException {
         super(x, y);
         this.playerId = playerId;
-        playerAvatar = ImageLoader.loadImage(0);
+        playerAvatar = ImageLoader.loadImage(playerFile);
     }
 
     @Override

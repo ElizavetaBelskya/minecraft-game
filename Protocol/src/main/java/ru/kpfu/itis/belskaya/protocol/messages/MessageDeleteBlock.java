@@ -6,8 +6,8 @@ public class MessageDeleteBlock extends Message {
 
     private int yCoordinate;
 
-    public MessageDeleteBlock(int xCoordinate, int yCoordinate) {
-        super(3);
+    public MessageDeleteBlock(int xCoordinate, int yCoordinate, int roomId, int connectionId) {
+        super(MessageTypes.DELETE_BLOCK_MESSAGE, roomId, connectionId);
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }

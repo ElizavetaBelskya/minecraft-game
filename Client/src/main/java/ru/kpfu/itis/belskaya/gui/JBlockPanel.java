@@ -2,29 +2,30 @@ package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.helpers.ImageLoader;
+import ru.kpfu.itis.belskaya.protocol.BlockType;
 
 import java.awt.*;
 
 public class JBlockPanel extends PlayableJComponent {
 
-    private int typeId;
+    private BlockType type;
     private Image block;
 
-    public JBlockPanel(int typeId) throws ResourceLoadingException {
+    public JBlockPanel(BlockType type) throws ResourceLoadingException {
         super(-1, -1);
-        this.typeId = typeId;
-        block = ImageLoader.loadImage(typeId);
+        this.type = type;
+        block = ImageLoader.loadImage(type.getFile());
     }
 
-    public JBlockPanel(int typeId, int xCoordinate, int yCoordinate) throws ResourceLoadingException {
+    public JBlockPanel(BlockType type, int xCoordinate, int yCoordinate) throws ResourceLoadingException {
         super(xCoordinate, yCoordinate);
-        this.typeId = typeId;
-        block = ImageLoader.loadImage(typeId);
-    }
-    public int getTypeId() {
-        return typeId;
+        this.type = type;
+        block = ImageLoader.loadImage(type.getFile());
     }
 
+    public BlockType getType() {
+        return type;
+    }
 
 
     @Override

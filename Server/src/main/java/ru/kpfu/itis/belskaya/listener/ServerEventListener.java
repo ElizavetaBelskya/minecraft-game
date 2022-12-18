@@ -7,6 +7,6 @@ import ru.kpfu.itis.belskaya.protocol.messages.Message;
 public interface ServerEventListener {
 
     public void init(Server server);
-    public void handle(int connectionId, Message message) throws ServerException;
+    public void handle(Message message) throws ServerException;
 
 }
