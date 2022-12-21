@@ -1,24 +1,16 @@
 package ru.kpfu.itis.belskaya.protocol.messages;
 
 public class MessagePutPlayer extends Message {
-
-    private static final byte TYPE = 1;
-    private int playerId;
     private int xCoordinate;
     private int yCoordinate;
-    public MessagePutPlayer(int playerId, int xCoordinate, int yCoordinate, int roomId, int connectionId) {
+    public MessagePutPlayer(int xCoordinate, int yCoordinate, int roomId, int connectionId) {
         super(MessageTypes.PUT_PLAYER_MESSAGE, roomId, connectionId);
-        this.playerId = playerId;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
     }
 
     public int getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
+        return getConnectionId();
     }
 
     public int getxCoordinate() {
@@ -40,7 +32,7 @@ public class MessagePutPlayer extends Message {
     @Override
     public String toString() {
         return "MessagePutPlayer{" +
-                "playerId=" + playerId +
+                "playerId=" + getConnectionId() +
                 ", xCoordinate=" + xCoordinate +
                 ", yCoordinate=" + yCoordinate +
                 '}';

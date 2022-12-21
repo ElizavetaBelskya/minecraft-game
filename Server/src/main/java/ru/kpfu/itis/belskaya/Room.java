@@ -33,12 +33,18 @@ public class Room {
         players.add(player);
     }
 
+    public void removeConnection(int connectionId) {
+        Connection connection = getRoomConnections().get(getPlayerAndConnectionIndex(connectionId));
+        roomConnections.remove(connection);
+        players.remove(getPlayerAndConnectionIndex(connection.getConnectionId()));
+    }
+
     public Room(int roomId) {
         this.roomId = roomId;
         players = new ArrayList<>();
     }
 
-    public int getPlayerIndex(int connectionId) {
+    public int getPlayerAndConnectionIndex(int connectionId) {
         int index = -1;
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getId() == connectionId) {
@@ -50,7 +56,7 @@ public class Room {
     }
 
     public void changedPlayerCoordinates(int playerId, int xCoordinate, int yCoordinate) {
-        int index = getPlayerIndex(playerId);
+        int index = getPlayerAndConnectionIndex(playerId);
         PlayerEntity player = players.get(index);
         player.setxCoordinate(xCoordinate);
         player.setyCoordinate(yCoordinate);
@@ -59,4 +65,5 @@ public class Room {
     public List<PlayerEntity> getPlayers() {
         return players;
     }
+
 }

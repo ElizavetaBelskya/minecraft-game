@@ -21,4 +21,8 @@ public abstract class Message implements Serializable {
     public int getRoomId() {
         return roomId;
     }
+
+    public int getConnectionId() {
+        return connectionId;
+    }
 }

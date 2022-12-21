@@ -37,7 +37,7 @@ public class ClientConnection {
         try {
             socket.close();
         } catch (IOException e) {
-
+            throw new RuntimeException();
         }
     }
 
@@ -49,4 +49,5 @@ public class ClientConnection {
     public int getRoomId() {
         return roomId;
     }
+
 }

@@ -15,7 +15,7 @@ public class MinecraftPanel extends MapPanel {
 
     private ArrayList<PlayerJComponent> playerJComponents = new ArrayList<PlayerJComponent>();
 
-    private final Color GRASS = new Color(0,80,0);
+    private static final Color GRASS = new Color(0,80,0);
 
     private ArrayList<JBlockPanel> blocks = new ArrayList<JBlockPanel>();
 
@@ -45,13 +45,27 @@ public class MinecraftPanel extends MapPanel {
         repaint();
     }
 
-    public void initPlayer(List<PlayerEntity> playersChanged) throws ResourceLoadingException {
+    public void initPlayers(List<PlayerEntity> playersChanged) throws ResourceLoadingException {
+        for (PlayerJComponent playerJComponent : playerJComponents) {
+            remove(playerJComponent);
+        }
         playerJComponents = new ArrayList<>();
-
+        System.out.println(playerJComponents);
         for (PlayerEntity playerEntity : playersChanged) {
             PlayerJComponent playerJComponent = new PlayerJComponent(playerEntity.getId(), playerEntity.getxCoordinate(), playerEntity.getyCoordinate());
             playerJComponents.add(playerJComponent);
         }
+
+        validate();
+        repaint();
+    }
+
+    public void removePlayer(int playerId) {
+        System.out.println(playerJComponents);
+        PlayerJComponent player = getPlayerById(playerId);
+        remove(player);
+        playerJComponents.remove(player);
+        validate();
         repaint();
     }
 
@@ -78,9 +92,12 @@ public class MinecraftPanel extends MapPanel {
         }
     }
 
+
+
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+
         for (PlayerJComponent p : playerJComponents) {
             add(p);
             setBlockLocation(p);

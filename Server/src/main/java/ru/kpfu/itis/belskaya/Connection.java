@@ -2,6 +2,7 @@ package ru.kpfu.itis.belskaya;
 
 import ru.kpfu.itis.belskaya.listener.JoinListener;
 import ru.kpfu.itis.belskaya.listener.ListenerHandler;
+import ru.kpfu.itis.belskaya.listener.RemovePlayerListener;
 import ru.kpfu.itis.belskaya.listener.ServerEventListener;
 import ru.kpfu.itis.belskaya.protocol.InputService;
 import ru.kpfu.itis.belskaya.protocol.OutputService;
@@ -11,9 +12,11 @@ import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
 import ru.kpfu.itis.belskaya.protocol.messages.Message;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
+import ru.kpfu.itis.belskaya.protocol.messages.MessageRemovePlayer;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 
 public class Connection implements Runnable {
@@ -47,21 +50,39 @@ public class Connection implements Runnable {
             join.handle(messageJoinGame);
 
             while ((message = inputService.readMessage()) != null) {
+                System.out.println(message);
                 ServerEventListener listener = ListenerHandler.getListenerByType(message.getMessageType());
                 listener.init(server);
                 listener.handle(message);
             }
 
+            MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
+            RemovePlayerListener removePlayerListener = new RemovePlayerListener();
+            server.getRoom(roomId).removeConnection(connectionId);
+            removePlayerListener.init(server);
+            removePlayerListener.handle(messageRemovePlayer);
             //TODO:Обработка исключений, братан!
-        } catch (MessageWorkException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedProtocolException e) {
-            throw new RuntimeException(e);
-        } catch (WrongMessageTypeException e) {
-            throw new RuntimeException(e);
-        } catch (ServerException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
+            RemovePlayerListener removePlayerListener = new RemovePlayerListener();
+            server.getRoom(roomId).removeConnection(connectionId);
+            removePlayerListener.init(server);
+            closeConnection();
+            try {
+                removePlayerListener.handle(messageRemovePlayer);
+            } catch (ServerException ex) {
+                throw new RuntimeException(ex);
+            }
         }
+//        } catch (ServerException e) {
+//            throw new RuntimeException(e);
+//        } catch (MessageWorkException e) {
+//            throw new RuntimeException(e);
+//        } catch (UnsupportedProtocolException e) {
+//            throw new RuntimeException(e);
+//        } catch (WrongMessageTypeException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
 
@@ -77,4 +98,13 @@ public class Connection implements Runnable {
     public int getConnectionId() {
         return connectionId;
     }
+
+    public void closeConnection() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
 }

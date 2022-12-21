@@ -47,20 +47,25 @@ public class MessageProcessor implements Runnable {
                     }
                     case JOIN_MESSAGE: {
                         MessageJoinGame messageJoinGame = (MessageJoinGame) message;
-                        frame.getMinecraftPanel().initPlayer(messageJoinGame.getPlayers());
+                        frame.getMinecraftPanel().initPlayers(messageJoinGame.getPlayers());
                         if (!connected) {
                             connection.setRoomId(message.getRoomId());
                             connected = true;
                             frame.initMainPlayer(messageJoinGame.getConnectionId());
-
                         }
                         frame.initGameListener();
+                        break;
+                    }
+                    case REMOVE_PLAYER_MESSAGE: {
+                        MessageRemovePlayer messageRemovePlayer = (MessageRemovePlayer) message;
+                        frame.getMinecraftPanel().removePlayer(messageRemovePlayer.getPlayerId());
                         break;
                     }
                 }
 
             }
         } catch (MessageWorkException | ResourceLoadingException | UnsupportedProtocolException e) {
+            connection.closeConnection();
             frame.showErrorMessageDialog(e.getMessage());
         }
     }
