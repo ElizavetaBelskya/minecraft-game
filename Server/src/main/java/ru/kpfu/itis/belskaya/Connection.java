@@ -1,22 +1,15 @@
 package ru.kpfu.itis.belskaya;
 
-import ru.kpfu.itis.belskaya.listener.JoinListener;
-import ru.kpfu.itis.belskaya.listener.ListenerHandler;
-import ru.kpfu.itis.belskaya.listener.RemovePlayerListener;
-import ru.kpfu.itis.belskaya.listener.ServerEventListener;
+import ru.kpfu.itis.belskaya.listener.*;
+import ru.kpfu.itis.belskaya.protocol.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.InputService;
 import ru.kpfu.itis.belskaya.protocol.OutputService;
 import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
-import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
-import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
-import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
-import ru.kpfu.itis.belskaya.protocol.messages.Message;
-import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
-import ru.kpfu.itis.belskaya.protocol.messages.MessageRemovePlayer;
+import ru.kpfu.itis.belskaya.protocol.messages.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.List;
 
 public class Connection implements Runnable {
@@ -26,8 +19,8 @@ public class Connection implements Runnable {
     private InputService inputService;
     private OutputService outputService;
     private int connectionId;
-
     private int roomId;
+    boolean started = false;
 
     public Connection(Server server, Socket socket, int connectionId, int roomId) throws IOException {
         this.socket = socket;
@@ -43,36 +36,35 @@ public class Connection implements Runnable {
     public void run() {
         Message message;
         try {
-            List<PlayerEntity> players = server.getRoom(roomId).getPlayers();
-            MessageJoinGame messageJoinGame = new MessageJoinGame(players, roomId, connectionId);
-            JoinListener join = new JoinListener();
-            join.init(server);
-            join.handle(messageJoinGame);
+            Integer[] roomIds = server.findAvailableRooms();
+            MessageChooseRoom messageChooseRoom = new MessageChooseRoom(connectionId, roomIds);
+            ChooseRoomListener chooseRoomListener = new ChooseRoomListener();
+            chooseRoomListener.init(server);
+            chooseRoomListener.handle(messageChooseRoom);
 
-            while ((message = inputService.readMessage()) != null) {
-                System.out.println(message);
+            do {
+                message = inputService.readMessage();
                 ServerEventListener listener = ListenerHandler.getListenerByType(message.getMessageType());
                 listener.init(server);
                 listener.handle(message);
-            }
+            } while (!(message.getMessageType() == MessageTypes.REMOVE_PLAYER_MESSAGE));
 
-            MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
-            RemovePlayerListener removePlayerListener = new RemovePlayerListener();
-            server.getRoom(roomId).removeConnection(connectionId);
-            removePlayerListener.init(server);
-            removePlayerListener.handle(messageRemovePlayer);
-            //TODO:Обработка исключений, братан!
         } catch (Exception e) {
-            MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
-            RemovePlayerListener removePlayerListener = new RemovePlayerListener();
-            server.getRoom(roomId).removeConnection(connectionId);
-            removePlayerListener.init(server);
-            closeConnection();
-            try {
-                removePlayerListener.handle(messageRemovePlayer);
-            } catch (ServerException ex) {
-                throw new RuntimeException(ex);
-            }
+//            if (started) {
+//                MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
+//                RemovePlayerListener removePlayerListener = new RemovePlayerListener();
+//                removePlayerListener.init(server);
+//                try {
+//                    removePlayerListener.handle(messageRemovePlayer);
+//                } catch (ServerException ex) {
+//                    throw new RuntimeException(ex);
+//                }
+//                closeConnection();
+//            } else {
+//                server.getRoom(roomId).removeConnection(connectionId);
+//                closeConnection();
+//            }
+
         }
 //        } catch (ServerException e) {
 //            throw new RuntimeException(e);
@@ -85,6 +77,10 @@ public class Connection implements Runnable {
 //        }
     }
 
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
 
     public InputService getInputService() {
         return inputService;
@@ -101,10 +97,24 @@ public class Connection implements Runnable {
 
     public void closeConnection() {
         try {
-            socket.close();
+            if (!socket.isClosed()) {
+                socket.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException();
         }
+    }
+
+
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
+    public MessageJoinGame createMessageJoinGame() {
+        List<PlayerEntity> players = server.getRoom(roomId).getPlayers();
+        List<BlockEntity> blocks = server.getRoom(roomId).getBlockEntities();
+        MessageJoinGame messageJoinGame = new MessageJoinGame(players, blocks, roomId, connectionId);
+        return messageJoinGame;
     }
 
 }

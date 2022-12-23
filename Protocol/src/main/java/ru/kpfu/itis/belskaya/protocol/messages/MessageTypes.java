@@ -8,10 +8,10 @@ public enum MessageTypes implements Serializable {
     PUT_PLAYER_MESSAGE(1),
     PUT_BLOCK_MESSAGE(2),
     DELETE_BLOCK_MESSAGE(3),
+    REMOVE_PLAYER_MESSAGE(4),
+    CHOOSE_ROOM_MESSAGE(5),
 
-    REMOVE_PLAYER_MESSAGE(4);
-
-    //CHOOSE_ROOM_MESSAGE(4);
+    JOIN_ROOM_MESSAGE(6);
     final int id;
     MessageTypes(int id) {
         this.id = id;

@@ -19,7 +19,7 @@ public class AppClient {
             MessageProcessor processor = new MessageProcessor(client.getConnection(), frame);
             frame.setVisible(true);
         } catch (UnknownHostException | ClientException e) {
-            frame.showErrorMessageDialog(e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error", e.getMessage(), JOptionPane.ERROR_MESSAGE);
             frame.closeFrame();
         }
 

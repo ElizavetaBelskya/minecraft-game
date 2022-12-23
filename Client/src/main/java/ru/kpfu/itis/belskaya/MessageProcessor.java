@@ -52,6 +52,7 @@ public class MessageProcessor implements Runnable {
                             connection.setRoomId(message.getRoomId());
                             connected = true;
                             frame.initMainPlayer(messageJoinGame.getConnectionId());
+                            frame.initBlocks(messageJoinGame.getBlocks());
                         }
                         frame.initGameListener();
                         break;
@@ -61,13 +62,27 @@ public class MessageProcessor implements Runnable {
                         frame.getMinecraftPanel().removePlayer(messageRemovePlayer.getPlayerId());
                         break;
                     }
+                    case CHOOSE_ROOM_MESSAGE: {
+                        MessageChooseRoom messageChooseRoom = (MessageChooseRoom) message;
+                        connection.setRoomId(messageChooseRoom.getRoomId());
+                        Integer roomId =  frame.chooseRoom(messageChooseRoom.getRoomIndexes());
+                        if (roomId != -1) {
+                            MessageJoinRoom messageJoinRoom = new MessageJoinRoom(roomId, message.getConnectionId());
+                            connection.getOutputService().writeMessage(messageJoinRoom);
+                        } else {
+                            frame.closeFrame();
+                        }
+                        break;
+                    }
                 }
 
             }
         } catch (MessageWorkException | ResourceLoadingException | UnsupportedProtocolException e) {
             connection.closeConnection();
             frame.showErrorMessageDialog(e.getMessage());
+            frame.closeFrame();
         }
+
     }
 
 

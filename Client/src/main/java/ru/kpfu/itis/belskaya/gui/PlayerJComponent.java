@@ -15,7 +15,7 @@ public class PlayerJComponent extends PlayableJComponent {
     private int playerId;
     private Image playerAvatar;
 
-    private final String playerFile = "stiv.png";
+    private final String playerFile = "stiv.jpg";
     public int getPlayerId() {
         return playerId;
     }

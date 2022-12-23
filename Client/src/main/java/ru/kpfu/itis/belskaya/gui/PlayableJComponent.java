@@ -3,8 +3,6 @@ package ru.kpfu.itis.belskaya.gui;
 import javax.swing.*;
 
 public class PlayableJComponent extends JPanel {
-
-    //TODO: abstract????
     private int xCoordinate;
     private int yCoordinate;
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MinecraftPanel extends MapPanel {
 
-    private static final int LINES_COUNT = 30;
+    private static final int LINES_COUNT = 20;
 
     private GameFrame frame;
 
@@ -30,18 +30,16 @@ public class MinecraftPanel extends MapPanel {
         setBackground(GRASS);
     }
 
-    private int getCellWidth() {
-        return getWidth() / LINES_COUNT;
+    private int getCellSide() {
+        int squareSide = Math.min(getHeight(), getWidth());
+        int cellSide = squareSide / LINES_COUNT;
+        return cellSide;
     }
-
-    private int getCellHeight() {
-        return getHeight() / LINES_COUNT;
-    }
-
     public void putPlayer(int playerId, int x, int y) {
         PlayerJComponent playerJComponent = getPlayerById(playerId);
         playerJComponent.setXCoordinate(x);
         playerJComponent.setYCoordinate(y);
+        setBlockLocation(playerJComponent);
         repaint();
     }
 
@@ -49,19 +47,18 @@ public class MinecraftPanel extends MapPanel {
         for (PlayerJComponent playerJComponent : playerJComponents) {
             remove(playerJComponent);
         }
+        validate();
         playerJComponents = new ArrayList<>();
-        System.out.println(playerJComponents);
         for (PlayerEntity playerEntity : playersChanged) {
             PlayerJComponent playerJComponent = new PlayerJComponent(playerEntity.getId(), playerEntity.getxCoordinate(), playerEntity.getyCoordinate());
             playerJComponents.add(playerJComponent);
+            add(playerJComponent);
+            setBlockLocation(playerJComponent);
         }
 
-        validate();
-        repaint();
     }
 
     public void removePlayer(int playerId) {
-        System.out.println(playerJComponents);
         PlayerJComponent player = getPlayerById(playerId);
         remove(player);
         playerJComponents.remove(player);
@@ -70,21 +67,23 @@ public class MinecraftPanel extends MapPanel {
     }
 
     private void setBlockLocation(PlayableJComponent blockEntity) {
-        int x = blockEntity.getXCoordinate()*getCellWidth();
-        int y = blockEntity.getYCoordinate()*getCellHeight();
-        blockEntity.setSize(getCellWidth(), getCellHeight());
+        int x = blockEntity.getXCoordinate()*getCellSide();
+        int y = blockEntity.getYCoordinate()*getCellSide();
+        blockEntity.setSize(getCellSide(), getCellSide());
         blockEntity.setLocation(x, y);
     }
 
     public void putBlock(JBlockPanel block) {
-        add(block);
-        blocks.add(block);
-        setBlockLocation(block);
+        if (!(findComponentAt(block.getXCoordinate()*getCellSide(), block.getYCoordinate()*getCellSide()) instanceof JBlockPanel)) {
+            add(block);
+            blocks.add(block);
+            setBlockLocation(block);
+        }
     }
 
     public void destroyBlock(int x, int y) {
-        if (findComponentAt(x*getCellWidth(), y*getCellHeight()) instanceof JBlockPanel) {
-            JBlockPanel removedBlock = (JBlockPanel) findComponentAt(x*getCellWidth(), y*getCellHeight());
+        if (findComponentAt(x*getCellSide(), y*getCellSide()) instanceof JBlockPanel) {
+            JBlockPanel removedBlock = (JBlockPanel) findComponentAt(x* getCellSide(), y* getCellSide());
             remove(removedBlock);
             blocks.remove(removedBlock);
             validate();
@@ -97,17 +96,6 @@ public class MinecraftPanel extends MapPanel {
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-
-        for (PlayerJComponent p : playerJComponents) {
-            add(p);
-            setBlockLocation(p);
-        }
-
-        for (JBlockPanel block : blocks) {
-            add(block);
-            setBlockLocation(block);
-        }
-
     }
 
 

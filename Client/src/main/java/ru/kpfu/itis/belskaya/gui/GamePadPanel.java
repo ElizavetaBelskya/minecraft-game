@@ -14,7 +14,7 @@ public class GamePadPanel extends JPanel {
         setBackground(Color.lightGray);
         setLayout(new GridBagLayout());
         JPanel blockPanel = new JPanel();
-        blockPanel.setBackground(Color.gray);
+        blockPanel.setBackground(Color.GRAY);
         blockPanel.setLayout(new BoxLayout(blockPanel, BoxLayout.Y_AXIS));
 
         GridBagConstraints constraints = new GridBagConstraints();

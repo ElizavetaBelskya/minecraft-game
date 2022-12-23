@@ -1,6 +1,8 @@
 package ru.kpfu.itis.belskaya.protocol;
 
-public class BlockEntity {
+import java.io.Serializable;
+
+public class BlockEntity implements Serializable {
     private BlockType blockType;
     private int x;
     private int y;

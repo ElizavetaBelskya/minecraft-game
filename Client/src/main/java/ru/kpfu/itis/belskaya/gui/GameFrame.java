@@ -2,21 +2,29 @@ package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.Client;
 import ru.kpfu.itis.belskaya.exceptions.ClientException;
+import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
+import ru.kpfu.itis.belskaya.protocol.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.BlockType;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageDeleteBlock;
 import ru.kpfu.itis.belskaya.protocol.messages.MessagePutBlock;
 import ru.kpfu.itis.belskaya.protocol.messages.MessagePutPlayer;
+import ru.kpfu.itis.belskaya.protocol.messages.MessageRemovePlayer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GameFrame extends JFrame {
     private final static int DEFAULT_WIDTH = 600;
     private final static int DEFAULT_HEIGHT = 500;
+
+    private int MIN_COORDINATE = 0;
+
+    private int MAX_COORDINATE = 20;
 
     private int mainPlayerId;
     private Client client;
@@ -29,7 +37,22 @@ public class GameFrame extends JFrame {
     public void createGUI(Client client) {
         this.client = client;
         setTitle(TITLE);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int roomId = client.getConnection().getRoomId();
+                int connectionId = mainPlayerId;
+                MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
+                try {
+                    client.sendMessage(messageRemovePlayer);
+                } catch (ClientException ex) {
+                    throw new RuntimeException(ex);
+                }
+                e.getWindow().dispose();
+                System.exit(0);
+            }
+        });
         setLayout(new GridBagLayout());
         setBounds(0,0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         createMinecraftPanel();
@@ -43,10 +66,10 @@ public class GameFrame extends JFrame {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weighty = 1;
         constraints.weightx = 1;
-        constraints.gridx = 5;
+        constraints.gridx = 6;
         constraints.gridy = 0;
         constraints.gridwidth = 1;
-        constraints.gridheight = 5;
+        constraints.gridheight = 6;
         getContentPane().add(gamePadPanel, constraints);
     }
 
@@ -55,16 +78,29 @@ public class GameFrame extends JFrame {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weighty = 1;
-        constraints.weightx = 5;
+        constraints.weightx = 6;
         constraints.gridy = 0;
         constraints.gridx = 0;
-        constraints.gridwidth = 5;
-        constraints.gridheight = 5;
+        constraints.gridwidth = 6;
+        constraints.gridheight = 6;
         getContentPane().add(minecraftPanel, constraints);
     }
 
     public void initMainPlayer(int id) {
         mainPlayerId = id;
+    }
+
+    public void initBlocks(List<BlockEntity> blockEntities) {
+        for (BlockEntity blockEntity : blockEntities) {
+            JBlockPanel blockPanel = null;
+            try {
+                blockPanel = new JBlockPanel(blockEntity.getBlockType(), blockEntity.getX(), blockEntity.getY());
+            } catch (ResourceLoadingException e) {
+                showErrorMessageDialog("Resource problem");
+                closeFrame();
+            }
+            minecraftPanel.putBlock(blockPanel);
+        }
     }
 
     private PlayerJComponent mainPlayerJComponent() {
@@ -87,13 +123,43 @@ public class GameFrame extends JFrame {
         this.blockId = blockId;
     }
 
-
     public void showErrorMessageDialog(String errorMessage) {
         JOptionPane.showMessageDialog(null, "Error", errorMessage, JOptionPane.ERROR_MESSAGE);
     }
 
     public void closeFrame() {
-        dispatchEvent(new WindowEvent(GameFrame.this, WindowEvent.WINDOW_CLOSING));
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+    }
+
+    public Integer chooseRoom(Integer[] roomId) {
+        Integer room = -1;
+        if (roomId.length == 0) {
+            Integer ans = JOptionPane.showConfirmDialog(this,"There are no available rooms at the moment. Create a new one?");
+            if (ans == 0) {
+                room = -2;
+            }
+        } else {
+            List<String> selectionOptions = new ArrayList<>();
+            selectionOptions.addAll(Arrays.stream(roomId).map(x -> x.toString()).collect(Collectors.toList()));
+            selectionOptions.add("Create a new room");
+            String result = (String) JOptionPane.showInputDialog(
+                    this,
+                    "Choose room, please",
+                    "Room",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    selectionOptions.toArray(),
+                    selectionOptions.get(0));
+            if (result != null) {
+                if (result.equals("Create a new room")) {
+                    room = -2;
+                } else {
+                    room = Integer.parseInt(result);
+                }
+            }
+        }
+
+        return room;
     }
 
     private class GameListener implements KeyListener {
@@ -112,150 +178,105 @@ public class GameFrame extends JFrame {
         public void keyReleased(KeyEvent e) {
             int key = e.getKeyCode();
             int mods = e.getModifiers();
-            if ((mods & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
-                switch (key) {
-                    case KeyEvent.VK_A:
-                        MessageDeleteBlock message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate()-1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
-                        //TODO:это что вообще переделай блин
-                        try {
+            try {
+                if ((mods & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+                    switch (key) {
+                        case KeyEvent.VK_A:
+                            MessageDeleteBlock message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate()-1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_W:
-                        message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate() - 1, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_W:
+                            message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate() - 1, roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_D:
-                        message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate()+1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_D:
+                            message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate()+1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_S:
-                        message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()+1, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_S:
+                            message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()+1, roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                }
-            } else {
-                switch (key) {
-                    case KeyEvent.VK_LEFT:
-                        Point point = movePlayerLeft(mainPlayerJComponent());
-                        MessagePutPlayer message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
-                        try {
+                            break;
+                    }
+                } else {
+                    switch (key) {
+                        case KeyEvent.VK_LEFT:
+                            Point point = movePlayerLeft(mainPlayerJComponent());
+                            MessagePutPlayer message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        point = movePlayerRight(mainPlayerJComponent());
-                        message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_RIGHT:
+                            point = movePlayerRight(mainPlayerJComponent());
+                            message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_UP:
-                        point = movePlayerUp(mainPlayerJComponent());
-                        message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_UP:
+                            point = movePlayerUp(mainPlayerJComponent());
+                            message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        point = movePlayerDown(mainPlayerJComponent());
-                        message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_DOWN:
+                            point = movePlayerDown(mainPlayerJComponent());
+                            message = new MessagePutPlayer(point.x, point.y, roomId, connectionId);
                             client.sendMessage(message);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_A:
-                        MessagePutBlock messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate()-1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_A:
+                            MessagePutBlock messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate()-1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
                             client.sendMessage(messagePutBlock);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_W:
-                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()-1, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_W:
+                            messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()-1, roomId, connectionId);
                             client.sendMessage(messagePutBlock);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_D:
-                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate()+1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_D:
+                            messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate()+1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
                             client.sendMessage(messagePutBlock);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                    case KeyEvent.VK_S:
-                        messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()+1, roomId, connectionId);
-                        try {
+                            break;
+                        case KeyEvent.VK_S:
+                            messagePutBlock = new MessagePutBlock(blockId, mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()+1, roomId, connectionId);
                             client.sendMessage(messagePutBlock);
-                        } catch (ClientException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        break;
-                }
+                            break;
+                    }
+            }
+
+            } catch (ClientException ex) {
+                throw new RuntimeException(ex);
             }
         }
 
 
         public Point movePlayerUp(PlayerJComponent playerJComponent) {
             int y = (playerJComponent.getYCoordinate()-1);
-            if (y < 0) {
-                y = 29;
+            if (y < MIN_COORDINATE) {
+                y = MAX_COORDINATE-1;
             }
             return new Point(playerJComponent.getXCoordinate(), y);
         }
 
         public Point movePlayerDown(PlayerJComponent playerJComponent) {
             int y = (playerJComponent.getYCoordinate()+1);
-            if (y > 29) {
-                y = 0;
+            if (y > MAX_COORDINATE-1) {
+                y = MIN_COORDINATE;
             }
             return new Point(playerJComponent.getXCoordinate(), y);
         }
 
         public Point movePlayerRight(PlayerJComponent playerJComponent) {
             int x = playerJComponent.getXCoordinate() + 1;
-            if (x > 29) {
-                x = 0;
+            if (x > MAX_COORDINATE-1) {
+                x = MIN_COORDINATE;
             }
             return new Point(x, playerJComponent.getYCoordinate());
         }
 
         public Point movePlayerLeft(PlayerJComponent playerJComponent) {
             int x = playerJComponent.getXCoordinate() - 1;
-            if (x < 0) {
-                x = 29;
+            if (x < MIN_COORDINATE) {
+                x = MAX_COORDINATE-1;
             }
             return new Point(x, playerJComponent.getYCoordinate());
         }
 
     }
-
 
 }

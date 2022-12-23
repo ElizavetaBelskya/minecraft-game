@@ -17,11 +17,6 @@ public class Client implements ClientWorking {
         this.address = address;
         this.port = port;
     }
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
     @Override
     public void init() throws ClientException {
         connection = new ClientConnection(address, port);

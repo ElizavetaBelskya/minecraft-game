@@ -7,7 +7,11 @@ public class RemovePlayerListener extends AbstractServerEventListener {
 
     @Override
     public void handle(Message message) throws ServerException {
-        server.sendBroadCastMessage(message);
+        System.out.println(message.getRoomId() + " " + message.getConnectionId());
+        server.getRoom(message.getRoomId()).removeConnection(message.getConnectionId());
+        if (message.getRoomId() != -1) {
+            server.sendBroadCastMessage(message);
+        }
     }
 
 }

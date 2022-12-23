@@ -14,7 +14,6 @@ public class InputService {
 
     private static final byte[] PROTOCOL_VERSION = {0x1, 0x1};
     private InputStream in;
-
     public InputService(InputStream in) {
         this.in = in;
     }

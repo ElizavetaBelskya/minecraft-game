@@ -1,7 +1,7 @@
 package ru.kpfu.itis.belskaya.protocol;
 
 public enum BlockType {
-    AMETHYST(1, "amethyst.png"),
+    AMETHYST(1, "amethyst.jpg"),
     BRICK(2, "brick.png"),
     DIAMOND(3, "dimond.png"),
     DIRT(4, "dirt.png"),

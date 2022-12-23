@@ -1,6 +1,7 @@
 package ru.kpfu.itis.belskaya.listener;
 
 import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
+import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageTypes;
 
 public class ListenerHandler {
@@ -16,6 +17,15 @@ public class ListenerHandler {
                 break;
             case DELETE_BLOCK_MESSAGE:
                 listener = new DeleteBlockListener();
+                break;
+            case REMOVE_PLAYER_MESSAGE:
+                listener = new RemovePlayerListener();
+                break;
+            case JOIN_ROOM_MESSAGE:
+                listener = new JoinRoomListener();
+                break;
+            case JOIN_MESSAGE:
+                listener = new JoinListener();
                 break;
             default:
                 throw new WrongMessageTypeException();
