@@ -1,6 +1,6 @@
 package ru.kpfu.itis.belskaya.protocol.messages;
 
-import ru.kpfu.itis.belskaya.protocol.BlockType;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockType;
 
 public class MessagePutBlock extends Message {
 

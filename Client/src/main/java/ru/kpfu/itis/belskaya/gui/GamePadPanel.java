@@ -1,7 +1,7 @@
 package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
-import ru.kpfu.itis.belskaya.protocol.BlockType;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockType;
 
 import javax.swing.*;
 import java.awt.*;

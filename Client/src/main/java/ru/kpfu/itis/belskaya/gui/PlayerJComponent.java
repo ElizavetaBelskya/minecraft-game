@@ -2,14 +2,8 @@ package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.helpers.ImageLoader;
-import ru.kpfu.itis.belskaya.protocol.BlockType;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 public class PlayerJComponent extends PlayableJComponent {
     private int playerId;

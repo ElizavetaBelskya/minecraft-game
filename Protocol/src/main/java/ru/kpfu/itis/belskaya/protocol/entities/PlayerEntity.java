@@ -1,4 +1,4 @@
-package ru.kpfu.itis.belskaya.protocol;
+package ru.kpfu.itis.belskaya.protocol.entities;
 
 import java.io.Serializable;
 import java.util.Objects;

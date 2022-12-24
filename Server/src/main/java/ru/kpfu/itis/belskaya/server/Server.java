@@ -1,9 +1,10 @@
-package ru.kpfu.itis.belskaya;
+package ru.kpfu.itis.belskaya.server;
 
+import ru.kpfu.itis.belskaya.exceptions.ServerException;
 import ru.kpfu.itis.belskaya.listener.ServerEventListener;
-import ru.kpfu.itis.belskaya.protocol.BlockEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
-import ru.kpfu.itis.belskaya.protocol.exceptions.PlayerToRoomAddingException;
+import ru.kpfu.itis.belskaya.exceptions.PlayerToRoomAddingException;
 import ru.kpfu.itis.belskaya.protocol.messages.*;
 
 import java.io.IOException;
@@ -49,12 +50,14 @@ public class Server implements ServerWorking {
         }
     }
 
+    @Override
     public void changedPlayerCoordinates(MessagePutPlayer messagePutPlayer) {
         int id = messagePutPlayer.getRoomId();
         Room room = getRoom(id);
         room.changedPlayerCoordinates(messagePutPlayer.getPlayerId(), messagePutPlayer.getxCoordinate(), messagePutPlayer.getyCoordinate());
     }
 
+    @Override
     public void addBlockToRoom(MessagePutBlock messagePutBlock) {
         int id = messagePutBlock.getRoomId();
         Room room = getRoom(id);
@@ -62,6 +65,7 @@ public class Server implements ServerWorking {
         room.addBlock(block);
     }
 
+    @Override
     public void removeBlockToRoom(MessageDeleteBlock messageDeleteBlock) {
         int id = messageDeleteBlock.getRoomId();
         Room room =  getRoom(id);
@@ -98,9 +102,19 @@ public class Server implements ServerWorking {
             rooms.add(room);
         }
         connection.setRoomId(room.getRoomId());
-        room.addConnection(connection);
+        addConnectionToRoom(connection, room.getRoomId());
         waitingRoom.removeConnection(connectionId);
         return room.getRoomId();
+    }
+
+    public void addConnectionToRoom(Connection connection, int roomId) throws PlayerToRoomAddingException {
+        Room room = getRoom(roomId);
+        room.addConnection(connection);
+    }
+
+    public void removeConnectionFromRoom(int roomId, int connectionId) {
+        Room room = getRoom(roomId);
+        room.removeConnection(connectionId);
     }
 
     @Override

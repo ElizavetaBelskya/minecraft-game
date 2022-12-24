@@ -8,7 +8,7 @@ public class ServerOverloadedListener extends AbstractServerEventListener {
     @Override
     public void handle(Message message) throws MessageWorkException {
         server.sendMessage(message, message.getConnectionId());
-        server.getRoom(-1).removeConnection(message.getConnectionId());
+        server.removeConnectionFromRoom(-1, message.getConnectionId());
     }
 
 }

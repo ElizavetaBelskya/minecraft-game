@@ -1,4 +1,4 @@
-package ru.kpfu.itis.belskaya.protocol;
+package ru.kpfu.itis.belskaya.protocol.entities;
 
 public enum BlockType {
     AMETHYST(1, "amethyst.jpg"),

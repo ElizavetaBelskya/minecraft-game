@@ -1,7 +1,7 @@
 package ru.kpfu.itis.belskaya.protocol.messages;
 
-import ru.kpfu.itis.belskaya.protocol.BlockEntity;
-import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.PlayerEntity;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.helpers.ImageLoader;
-import ru.kpfu.itis.belskaya.protocol.BlockType;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockType;
 import java.awt.*;
 
 public class JBlockPanel extends PlayableJComponent {

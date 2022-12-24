@@ -1,8 +1,8 @@
-package ru.kpfu.itis.belskaya;
+package ru.kpfu.itis.belskaya.client;
 
 import ru.kpfu.itis.belskaya.exceptions.ClientException;
-import ru.kpfu.itis.belskaya.protocol.InputService;
-import ru.kpfu.itis.belskaya.protocol.OutputService;
+import ru.kpfu.itis.belskaya.protocol.ioServices.InputService;
+import ru.kpfu.itis.belskaya.protocol.ioServices.OutputService;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,12 +1,16 @@
 package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
-import ru.kpfu.itis.belskaya.protocol.BlockEntity;
-import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.PlayerEntity;
+import ru.kpfu.itis.belskaya.protocol.messages.MessageExplode;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MinecraftPanel extends MapPanel {
     private static final int LINES_COUNT = 20;
@@ -81,6 +85,13 @@ public class MinecraftPanel extends MapPanel {
         }
     }
 
+    public JBlockPanel getBlock(int x, int y) {
+        if (findComponentAt(x*getCellSide(), y*getCellSide()) instanceof JBlockPanel) {
+            return (JBlockPanel) findComponentAt(x*getCellSide(), y*getCellSide());
+        }
+        return null;
+    }
+
     public void destroyBlock(int x, int y) {
         if (findComponentAt(x*getCellSide(), y*getCellSide()) instanceof JBlockPanel) {
             JBlockPanel removedBlock = (JBlockPanel) findComponentAt(x* getCellSide(), y* getCellSide());
@@ -106,6 +117,7 @@ public class MinecraftPanel extends MapPanel {
                 add(block);
                 setBlockLocation(block);
             }
+            squareSide = Math.min(getHeight(), getWidth());
         }
     }
 

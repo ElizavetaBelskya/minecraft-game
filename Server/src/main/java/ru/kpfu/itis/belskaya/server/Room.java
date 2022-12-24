@@ -1,8 +1,8 @@
-package ru.kpfu.itis.belskaya;
+package ru.kpfu.itis.belskaya.server;
 
-import ru.kpfu.itis.belskaya.protocol.BlockEntity;
-import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
-import ru.kpfu.itis.belskaya.protocol.exceptions.PlayerToRoomAddingException;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.PlayerEntity;
+import ru.kpfu.itis.belskaya.exceptions.PlayerToRoomAddingException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class Room {
         return roomConnections.size();
     }
 
-    public void addConnection(Connection connection) throws PlayerToRoomAddingException {
+    protected void addConnection(Connection connection) throws PlayerToRoomAddingException {
         if (getCountOfPlayers() < MAX_COUNT || MAX_COUNT == -1) {
             roomConnections.add(connection);
             connection.getServer().incrementConnectionCounter();
@@ -43,7 +43,7 @@ public class Room {
 
     }
 
-    public void removeConnection(int connectionId) {
+    protected void removeConnection(int connectionId) {
         int index = getPlayerAndConnectionIndex(connectionId);
         getConnection(connectionId).getServer().decrementConnectionCounter();
         roomConnections.remove(index);

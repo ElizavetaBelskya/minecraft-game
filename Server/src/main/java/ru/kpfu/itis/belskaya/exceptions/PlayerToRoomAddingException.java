@@ -1,4 +1,4 @@
-package ru.kpfu.itis.belskaya.protocol.exceptions;
+package ru.kpfu.itis.belskaya.exceptions;
 
 public class PlayerToRoomAddingException extends Exception {
     public PlayerToRoomAddingException() {

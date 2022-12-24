@@ -1,6 +1,6 @@
 package ru.kpfu.itis.belskaya.listener;
 
-import ru.kpfu.itis.belskaya.Server;
+import ru.kpfu.itis.belskaya.server.Server;
 
 public abstract class AbstractServerEventListener implements ServerEventListener {
 

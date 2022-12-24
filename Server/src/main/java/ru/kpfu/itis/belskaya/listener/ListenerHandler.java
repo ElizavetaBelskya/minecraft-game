@@ -1,8 +1,7 @@
 package ru.kpfu.itis.belskaya.listener;
 
-import ru.kpfu.itis.belskaya.Server;
+import ru.kpfu.itis.belskaya.server.Server;
 import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
-import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageTypes;
 
 public class ListenerHandler {
@@ -13,6 +12,8 @@ public class ListenerHandler {
     private DeleteBlockListener deleteBlockListener;
     private JoinRoomListener joinRoomListener;
     private JoinListener joinListener;
+
+    private ExplodeListener explodeListener;
 
     public ListenerHandler(Server server) {
         this.server = server;
@@ -50,6 +51,12 @@ public class ListenerHandler {
                     joinListener = new JoinListener();
                 }
                 listener = joinListener;
+                break;
+            case EXPLODE_MESSAGE:
+                if (explodeListener == null) {
+                    explodeListener = new ExplodeListener();
+                }
+                listener = explodeListener;
                 break;
             default:
                 throw new WrongMessageTypeException();

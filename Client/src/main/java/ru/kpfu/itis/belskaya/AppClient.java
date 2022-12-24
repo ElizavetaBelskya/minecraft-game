@@ -1,5 +1,6 @@
 package ru.kpfu.itis.belskaya;
 
+import ru.kpfu.itis.belskaya.client.Client;
 import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
 import ru.kpfu.itis.belskaya.listener.MessageProcessor;

@@ -1,9 +1,8 @@
 package ru.kpfu.itis.belskaya.listener;
 
-import ru.kpfu.itis.belskaya.Room;
-import ru.kpfu.itis.belskaya.ServerException;
+import ru.kpfu.itis.belskaya.server.Room;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
-import ru.kpfu.itis.belskaya.protocol.exceptions.PlayerToRoomAddingException;
+import ru.kpfu.itis.belskaya.exceptions.PlayerToRoomAddingException;
 import ru.kpfu.itis.belskaya.protocol.messages.Message;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageChooseRoom;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;

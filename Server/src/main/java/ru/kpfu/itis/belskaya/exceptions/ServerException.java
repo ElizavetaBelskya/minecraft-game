@@ -1,4 +1,4 @@
-package ru.kpfu.itis.belskaya;
+package ru.kpfu.itis.belskaya.exceptions;
 
 public class ServerException extends Exception {
 

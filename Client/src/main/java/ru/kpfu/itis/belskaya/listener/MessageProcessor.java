@@ -1,15 +1,18 @@
 package ru.kpfu.itis.belskaya.listener;
 
-import ru.kpfu.itis.belskaya.ClientConnection;
+import ru.kpfu.itis.belskaya.client.ClientConnection;
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
-import ru.kpfu.itis.belskaya.protocol.BlockEntity;
-import ru.kpfu.itis.belskaya.protocol.InputService;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
+import ru.kpfu.itis.belskaya.protocol.ioServices.InputService;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
 import ru.kpfu.itis.belskaya.protocol.messages.*;
 
 import javax.swing.*;
+import java.lang.management.ThreadInfo;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MessageProcessor implements Runnable {
     private boolean connected = false;
@@ -81,9 +84,9 @@ public class MessageProcessor implements Runnable {
                     case SERVER_IS_FULL_MESSAGE: {
                         frame.showErrorMessageDialog("At the moment the server is overloaded.");
                         frame.closeFrame();
+                        break;
                     }
                 }
-
             }
         } catch (MessageWorkException | ResourceLoadingException | UnsupportedProtocolException e) {
             JOptionPane.showMessageDialog(null, "Error", e.getMessage(), JOptionPane.ERROR_MESSAGE);

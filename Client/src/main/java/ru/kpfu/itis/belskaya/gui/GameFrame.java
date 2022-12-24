@@ -1,14 +1,11 @@
 package ru.kpfu.itis.belskaya.gui;
 
-import ru.kpfu.itis.belskaya.Client;
+import ru.kpfu.itis.belskaya.client.Client;
 import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
-import ru.kpfu.itis.belskaya.protocol.BlockEntity;
-import ru.kpfu.itis.belskaya.protocol.BlockType;
-import ru.kpfu.itis.belskaya.protocol.messages.MessageDeleteBlock;
-import ru.kpfu.itis.belskaya.protocol.messages.MessagePutBlock;
-import ru.kpfu.itis.belskaya.protocol.messages.MessagePutPlayer;
-import ru.kpfu.itis.belskaya.protocol.messages.MessageRemovePlayer;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
+import ru.kpfu.itis.belskaya.protocol.entities.BlockType;
+import ru.kpfu.itis.belskaya.protocol.messages.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -169,23 +166,60 @@ public class GameFrame extends JFrame {
             int mods = e.getModifiers();
             try {
                 if ((mods & ActionEvent.CTRL_MASK) == ActionEvent.CTRL_MASK) {
+                    int x;
+                    int y;
                     switch (key) {
                         case KeyEvent.VK_A:
-                            MessageDeleteBlock message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate()-1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
-                            client.sendMessage(message);
+                            x = mainPlayerJComponent().getXCoordinate() - 1;
+                            y =  mainPlayerJComponent().getYCoordinate();
                             break;
                         case KeyEvent.VK_W:
-                            message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate() - 1, roomId, connectionId);
-                            client.sendMessage(message);
+                            x = mainPlayerJComponent().getXCoordinate();
+                            y = mainPlayerJComponent().getYCoordinate() - 1;
                             break;
                         case KeyEvent.VK_D:
-                            message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate()+1, mainPlayerJComponent().getYCoordinate(), roomId, connectionId);
-                            client.sendMessage(message);
+                            x = mainPlayerJComponent().getXCoordinate() + 1;
+                            y = mainPlayerJComponent().getYCoordinate();
                             break;
                         case KeyEvent.VK_S:
-                            message = new MessageDeleteBlock(mainPlayerJComponent().getXCoordinate(), mainPlayerJComponent().getYCoordinate()+1, roomId, connectionId);
-                            client.sendMessage(message);
+                            x = mainPlayerJComponent().getXCoordinate();
+                            y = mainPlayerJComponent().getYCoordinate() + 1;
                             break;
+                        default:
+                            x = -100;
+                            y = -100;
+                    }
+                    if (x != -100 && y != -100 && getMinecraftPanel().getBlock(x, y) != null) {
+                        MessageDeleteBlock message = new MessageDeleteBlock(x, y, roomId, connectionId);
+                        client.sendMessage(message);
+                    }
+                } else if ((mods & ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK) {
+                    int x;
+                    int y;
+                    switch (key) {
+                        case KeyEvent.VK_A:
+                            x = mainPlayerJComponent().getXCoordinate() - 1;
+                            y =  mainPlayerJComponent().getYCoordinate();
+                            break;
+                        case KeyEvent.VK_W:
+                            x = mainPlayerJComponent().getXCoordinate();
+                            y = mainPlayerJComponent().getYCoordinate() - 1;
+                            break;
+                        case KeyEvent.VK_D:
+                            x = mainPlayerJComponent().getXCoordinate() + 1;
+                            y = mainPlayerJComponent().getYCoordinate();
+                            break;
+                        case KeyEvent.VK_S:
+                            x = mainPlayerJComponent().getXCoordinate();
+                            y = mainPlayerJComponent().getYCoordinate() + 1;
+                            break;
+                        default:
+                            x = -100;
+                            y = -100;
+                    }
+                    if (x != -100 && y != -100 && getMinecraftPanel().getBlock(x, y) != null && getMinecraftPanel().getBlock(x, y).getType().equals(BlockType.TNT)) {
+                        MessageExplode message = new MessageExplode(x, y, roomId, connectionId);
+                        client.sendMessage(message);
                     }
                 } else {
                     switch (key) {

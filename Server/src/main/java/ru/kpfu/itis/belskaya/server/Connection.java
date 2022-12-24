@@ -1,12 +1,13 @@
-package ru.kpfu.itis.belskaya;
+package ru.kpfu.itis.belskaya.server;
 
 import ru.kpfu.itis.belskaya.listener.*;
-import ru.kpfu.itis.belskaya.protocol.InputService;
-import ru.kpfu.itis.belskaya.protocol.OutputService;
+import ru.kpfu.itis.belskaya.protocol.ioServices.InputService;
+import ru.kpfu.itis.belskaya.protocol.ioServices.OutputService;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
 import ru.kpfu.itis.belskaya.protocol.messages.*;
+
 import java.io.IOException;
 import java.net.Socket;
 
