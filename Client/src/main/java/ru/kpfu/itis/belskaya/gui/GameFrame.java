@@ -67,7 +67,7 @@ public class GameFrame extends JFrame {
     }
 
     public void createMinecraftPanel() {
-        minecraftPanel = new MinecraftPanel(this);
+        minecraftPanel = new MinecraftPanel();
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weighty = 1;

@@ -3,18 +3,13 @@ package ru.kpfu.itis.belskaya.gui;
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.entities.PlayerEntity;
-import ru.kpfu.itis.belskaya.protocol.messages.MessageExplode;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MinecraftPanel extends MapPanel {
     private static final int LINES_COUNT = 20;
-    private GameFrame frame;
     private ArrayList<PlayerJComponent> playerJComponents = new ArrayList<PlayerJComponent>();
     private static final Color GRASS = new Color(0,80,0);
 
@@ -26,9 +21,8 @@ public class MinecraftPanel extends MapPanel {
         return playerJComponents.stream().filter(x -> x.getPlayerId() == id).findFirst().get();
     }
 
-    public MinecraftPanel(GameFrame frame) {
+    public MinecraftPanel() {
         super(LINES_COUNT);
-        this.frame = frame;
         setLayout(null);
         setBackground(GRASS);
     }
@@ -119,11 +113,6 @@ public class MinecraftPanel extends MapPanel {
             }
             squareSide = Math.min(getHeight(), getWidth());
         }
-    }
-
-
-    public ArrayList<PlayerJComponent> getPlayers() {
-        return playerJComponents;
     }
 
 

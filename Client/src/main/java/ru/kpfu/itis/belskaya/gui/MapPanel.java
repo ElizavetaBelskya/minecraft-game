@@ -12,7 +12,7 @@ class MapPanel extends JPanel {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.GRAY);
         int squareSide = Math.min(getHeight(), getWidth());

@@ -1,21 +1,20 @@
 package ru.kpfu.itis.belskaya.listener;
 
 import ru.kpfu.itis.belskaya.client.ClientConnection;
+import ru.kpfu.itis.belskaya.client.ClientController;
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
-import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.ioServices.InputService;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
 import ru.kpfu.itis.belskaya.protocol.messages.*;
 
 import javax.swing.*;
-import java.lang.management.ThreadInfo;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MessageProcessor implements Runnable {
     private boolean connected = false;
+
+    private ClientController clientController;
     private InputService inputService;
     private ClientConnection connection;
     private GameFrame frame;
@@ -25,6 +24,7 @@ public class MessageProcessor implements Runnable {
         this.inputService = connection.getInputService();
         this.connection = connection;
         this.frame = frame;
+        clientController = new ClientController(frame);
         thread = new Thread(this);
         thread.start();
     }
@@ -36,35 +36,26 @@ public class MessageProcessor implements Runnable {
             while ((message = inputService.readMessage()) != null) {
                 switch (message.getMessageType()) {
                     case PUT_PLAYER_MESSAGE: {
-                        MessagePutPlayer messagePutPlayer = (MessagePutPlayer) message;
-                        frame.getMinecraftPanel().putPlayer(messagePutPlayer.getPlayerId(), messagePutPlayer.getxCoordinate(), messagePutPlayer.getyCoordinate());
+                        clientController.putPlayer(message);
                         break;
                     }
                     case PUT_BLOCK_MESSAGE: {
-                        MessagePutBlock messagePutBlock = (MessagePutBlock) message;
-                        BlockEntity block = new BlockEntity(messagePutBlock.getBlockType(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
-                        frame.getMinecraftPanel().putBlock(block);
+                        clientController.putBlock(message);
                         break;
                     }
                     case DELETE_BLOCK_MESSAGE: {
-                        MessageDeleteBlock messageDeleteBlock = (MessageDeleteBlock) message;
-                        frame.getMinecraftPanel().destroyBlock(messageDeleteBlock.getxCoordinate(), messageDeleteBlock.getyCoordinate());
+                        clientController.removeBlock(message);
                         break;
                     }
                     case JOIN_MESSAGE: {
-                        MessageJoinGame messageJoinGame = (MessageJoinGame) message;
-                        frame.getMinecraftPanel().initPlayers(messageJoinGame.getPlayers());
                         if (!connected) {
                             connection.setRoomId(message.getRoomId());
-                            connected = true;
-                            frame.initBlocks(messageJoinGame.getBlocks());
                         }
-                        frame.initGameListener();
+                        connected = clientController.join(message, connected);
                         break;
                     }
                     case REMOVE_PLAYER_MESSAGE: {
-                        MessageRemovePlayer messageRemovePlayer = (MessageRemovePlayer) message;
-                        frame.getMinecraftPanel().removePlayer(messageRemovePlayer.getPlayerId());
+                        clientController.removePlayer(message);
                         break;
                     }
                     case CHOOSE_ROOM_MESSAGE: {
