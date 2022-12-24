@@ -189,7 +189,7 @@ public class GameFrame extends JFrame {
                             x = -100;
                             y = -100;
                     }
-                    if (x != -100 && y != -100 && getMinecraftPanel().getBlock(x, y) instanceof JBlockPanel) {
+                    if (x != -100 && y != -100 && getMinecraftPanel().getBlock(x, y) != null) {
                         MessageDeleteBlock message = new MessageDeleteBlock(x, y, roomId, connectionId);
                         client.sendMessage(message);
                     }
@@ -217,7 +217,7 @@ public class GameFrame extends JFrame {
                             x = -100;
                             y = -100;
                     }
-                    if (x != -100 && y != -100 && getMinecraftPanel().getBlock(x, y) instanceof JBlockPanel && getMinecraftPanel().getBlock(x, y).getType().equals(BlockType.TNT)) {
+                    if (x != -100 && y != -100 && getMinecraftPanel().getBlock(x, y) != null && getMinecraftPanel().getBlock(x, y).getType().equals(BlockType.TNT)) {
                         MessageExplode message = new MessageExplode(x, y, roomId, connectionId);
                         client.sendMessage(message);
                     }

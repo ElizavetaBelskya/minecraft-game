@@ -36,4 +36,13 @@ public class BlockEntity implements Serializable {
     public void setY(int y) {
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "BlockEntity{" +
+                "blockType=" + blockType +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

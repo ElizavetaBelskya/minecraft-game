@@ -87,23 +87,26 @@ public class Room {
     }
 
     public void addBlock(BlockEntity block) {
-        blockEntities.add(block);
+        if (findBlockByCoordinates(block.getX(), block.getY()) == -1) {
+            blockEntities.add(block);
+        }
     }
 
     public void removeBlock(int x, int y) {
-        BlockEntity block = findBlockByCoordinates(x, y);
-        if (block != null) {
+        int block = findBlockByCoordinates(x, y);
+        if (block != -1) {
             blockEntities.remove(block);
         }
     }
 
-    private BlockEntity findBlockByCoordinates(int x, int y) {
-        for (BlockEntity block: blockEntities) {
-            if (block.getX() == x && block.getY() == y) {
-                return block;
+    private int findBlockByCoordinates(int x, int y) {
+        int block = -1;
+        for (int i = 0; i < blockEntities.size(); i++) {
+            if (blockEntities.get(i).getX() == x && blockEntities.get(i).getY() == y) {
+                return i;
             }
         }
-        return null;
+        return block;
     }
 
 
