@@ -1,6 +1,7 @@
 package ru.kpfu.itis.belskaya.gui;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
+import ru.kpfu.itis.belskaya.protocol.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
 
 import java.awt.*;
@@ -8,16 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MinecraftPanel extends MapPanel {
-
     private static final int LINES_COUNT = 20;
-
     private GameFrame frame;
-
     private ArrayList<PlayerJComponent> playerJComponents = new ArrayList<PlayerJComponent>();
-
     private static final Color GRASS = new Color(0,80,0);
 
     private ArrayList<JBlockPanel> blocks = new ArrayList<JBlockPanel>();
+
+    private int squareSide;
 
     public PlayerJComponent getPlayerById(int id) {
         return playerJComponents.stream().filter(x -> x.getPlayerId() == id).findFirst().get();
@@ -31,7 +30,7 @@ public class MinecraftPanel extends MapPanel {
     }
 
     private int getCellSide() {
-        int squareSide = Math.min(getHeight(), getWidth());
+        squareSide = Math.min(getHeight(), getWidth());
         int cellSide = squareSide / LINES_COUNT;
         return cellSide;
     }
@@ -73,8 +72,9 @@ public class MinecraftPanel extends MapPanel {
         blockEntity.setLocation(x, y);
     }
 
-    public void putBlock(JBlockPanel block) {
-        if (!(findComponentAt(block.getXCoordinate()*getCellSide(), block.getYCoordinate()*getCellSide()) instanceof JBlockPanel)) {
+    public void putBlock(BlockEntity blockEntity) throws ResourceLoadingException {
+        if (!(findComponentAt(blockEntity.getX()*getCellSide(), blockEntity.getY()*getCellSide()) instanceof JBlockPanel)) {
+            JBlockPanel block = new JBlockPanel(blockEntity.getBlockType(), blockEntity.getX(), blockEntity.getY());
             add(block);
             blocks.add(block);
             setBlockLocation(block);
@@ -96,6 +96,17 @@ public class MinecraftPanel extends MapPanel {
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        if (squareSide != Math.min(getHeight(), getWidth())) {
+            for (PlayerJComponent p : playerJComponents) {
+                add(p);
+                setBlockLocation(p);
+            }
+
+            for (JBlockPanel block : blocks) {
+                add(block);
+                setBlockLocation(block);
+            }
+        }
     }
 
 

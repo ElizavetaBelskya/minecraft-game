@@ -1,12 +1,15 @@
-package ru.kpfu.itis.belskaya;
+package ru.kpfu.itis.belskaya.listener;
 
+import ru.kpfu.itis.belskaya.ClientConnection;
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
-import ru.kpfu.itis.belskaya.gui.JBlockPanel;
+import ru.kpfu.itis.belskaya.protocol.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.InputService;
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.exceptions.UnsupportedProtocolException;
 import ru.kpfu.itis.belskaya.protocol.messages.*;
+
+import javax.swing.*;
 
 public class MessageProcessor implements Runnable {
     private boolean connected = false;
@@ -36,7 +39,7 @@ public class MessageProcessor implements Runnable {
                     }
                     case PUT_BLOCK_MESSAGE: {
                         MessagePutBlock messagePutBlock = (MessagePutBlock) message;
-                        JBlockPanel block = new JBlockPanel(messagePutBlock.getBlockType(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
+                        BlockEntity block = new BlockEntity(messagePutBlock.getBlockType(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
                         frame.getMinecraftPanel().putBlock(block);
                         break;
                     }
@@ -51,7 +54,6 @@ public class MessageProcessor implements Runnable {
                         if (!connected) {
                             connection.setRoomId(message.getRoomId());
                             connected = true;
-                            frame.initMainPlayer(messageJoinGame.getConnectionId());
                             frame.initBlocks(messageJoinGame.getBlocks());
                         }
                         frame.initGameListener();
@@ -65,7 +67,9 @@ public class MessageProcessor implements Runnable {
                     case CHOOSE_ROOM_MESSAGE: {
                         MessageChooseRoom messageChooseRoom = (MessageChooseRoom) message;
                         connection.setRoomId(messageChooseRoom.getRoomId());
+                        frame.initMainPlayer(message.getConnectionId());
                         Integer roomId =  frame.chooseRoom(messageChooseRoom.getRoomIndexes());
+
                         if (roomId != -1) {
                             MessageJoinRoom messageJoinRoom = new MessageJoinRoom(roomId, message.getConnectionId());
                             connection.getOutputService().writeMessage(messageJoinRoom);
@@ -74,12 +78,15 @@ public class MessageProcessor implements Runnable {
                         }
                         break;
                     }
+                    case SERVER_IS_FULL_MESSAGE: {
+                        frame.showErrorMessageDialog("At the moment the server is overloaded.");
+                        frame.closeFrame();
+                    }
                 }
 
             }
         } catch (MessageWorkException | ResourceLoadingException | UnsupportedProtocolException e) {
-            connection.closeConnection();
-            frame.showErrorMessageDialog(e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error", e.getMessage(), JOptionPane.ERROR_MESSAGE);
             frame.closeFrame();
         }
 

@@ -2,6 +2,7 @@ package ru.kpfu.itis.belskaya;
 
 import ru.kpfu.itis.belskaya.exceptions.ClientException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
+import ru.kpfu.itis.belskaya.listener.MessageProcessor;
 
 import javax.swing.*;
 import java.net.InetAddress;

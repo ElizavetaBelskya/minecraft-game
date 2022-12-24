@@ -21,11 +21,8 @@ import java.util.stream.Collectors;
 public class GameFrame extends JFrame {
     private final static int DEFAULT_WIDTH = 600;
     private final static int DEFAULT_HEIGHT = 500;
-
     private int MIN_COORDINATE = 0;
-
     private int MAX_COORDINATE = 20;
-
     private int mainPlayerId;
     private Client client;
     private GameListener listener;
@@ -46,9 +43,8 @@ public class GameFrame extends JFrame {
                 MessageRemovePlayer messageRemovePlayer = new MessageRemovePlayer(roomId, connectionId);
                 try {
                     client.sendMessage(messageRemovePlayer);
-                } catch (ClientException ex) {
-                    throw new RuntimeException(ex);
-                }
+                } catch (ClientException ex) {}
+                client.getConnection().closeConnection();
                 e.getWindow().dispose();
                 System.exit(0);
             }
@@ -90,16 +86,9 @@ public class GameFrame extends JFrame {
         mainPlayerId = id;
     }
 
-    public void initBlocks(List<BlockEntity> blockEntities) {
+    public void initBlocks(List<BlockEntity> blockEntities) throws ResourceLoadingException {
         for (BlockEntity blockEntity : blockEntities) {
-            JBlockPanel blockPanel = null;
-            try {
-                blockPanel = new JBlockPanel(blockEntity.getBlockType(), blockEntity.getX(), blockEntity.getY());
-            } catch (ResourceLoadingException e) {
-                showErrorMessageDialog("Resource problem");
-                closeFrame();
-            }
-            minecraftPanel.putBlock(blockPanel);
+            minecraftPanel.putBlock(blockEntity);
         }
     }
 

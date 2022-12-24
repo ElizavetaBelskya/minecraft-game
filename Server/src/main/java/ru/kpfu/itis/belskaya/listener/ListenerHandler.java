@@ -1,35 +1,60 @@
 package ru.kpfu.itis.belskaya.listener;
 
+import ru.kpfu.itis.belskaya.Server;
 import ru.kpfu.itis.belskaya.protocol.exceptions.WrongMessageTypeException;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageJoinGame;
 import ru.kpfu.itis.belskaya.protocol.messages.MessageTypes;
 
 public class ListenerHandler {
 
-    public static ServerEventListener getListenerByType(MessageTypes type) throws WrongMessageTypeException {
+    private Server server;
+    private PutPlayerListener putPlayerListener;
+    private PutBlockListener putBlockListener;
+    private DeleteBlockListener deleteBlockListener;
+    private JoinRoomListener joinRoomListener;
+    private JoinListener joinListener;
+
+    public ListenerHandler(Server server) {
+        this.server = server;
+    }
+
+    public ServerEventListener getListenerByType(MessageTypes type) throws WrongMessageTypeException {
         ServerEventListener listener;
         switch (type) {
             case PUT_PLAYER_MESSAGE:
-                listener = new PutPlayerListener();
+                if (putPlayerListener == null) {
+                    putPlayerListener = new PutPlayerListener();
+                }
+                listener = putPlayerListener;
                 break;
             case PUT_BLOCK_MESSAGE:
-                listener = new PutBlockListener();
+                if (putBlockListener == null) {
+                    putBlockListener = new PutBlockListener();
+                }
+                listener = putBlockListener;
                 break;
             case DELETE_BLOCK_MESSAGE:
-                listener = new DeleteBlockListener();
-                break;
-            case REMOVE_PLAYER_MESSAGE:
-                listener = new RemovePlayerListener();
+                if (deleteBlockListener == null) {
+                    deleteBlockListener = new DeleteBlockListener();
+                }
+                listener = deleteBlockListener;
                 break;
             case JOIN_ROOM_MESSAGE:
-                listener = new JoinRoomListener();
+                if (joinRoomListener == null) {
+                    joinRoomListener = new JoinRoomListener();
+                }
+                listener = joinRoomListener;
                 break;
             case JOIN_MESSAGE:
-                listener = new JoinListener();
+                if (joinListener == null) {
+                    joinListener = new JoinListener();
+                }
+                listener = joinListener;
                 break;
             default:
                 throw new WrongMessageTypeException();
         }
+        listener.init(server);
         return listener;
     }
 

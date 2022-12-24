@@ -12,12 +12,13 @@ import java.net.URLDecoder;
 public class ImageLoader {
 
     public static Image loadImage(String fileLink) throws ResourceLoadingException {
+        Image img = null;
         try {
-            Image img = ImageIO.read(new File(getImageResource(fileLink)));
-            return img;
+            img = ImageIO.read(new File(getImageResource(fileLink)));
         } catch (IOException e) {
             throw new ResourceLoadingException(e);
         }
+        return img;
     }
 
     public static String getImageResource(String resource) throws ResourceLoadingException {

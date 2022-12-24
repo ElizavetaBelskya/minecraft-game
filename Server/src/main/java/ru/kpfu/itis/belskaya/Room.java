@@ -2,6 +2,7 @@ package ru.kpfu.itis.belskaya;
 
 import ru.kpfu.itis.belskaya.protocol.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.PlayerEntity;
+import ru.kpfu.itis.belskaya.protocol.exceptions.PlayerToRoomAddingException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +11,8 @@ public class Room {
     private int roomId;
     private int MIN_COORDINATE = 0;
     private int MAX_COORDINATE = 20;
-    public final static int MAX_COUNT = 4;
-    private List<PlayerEntity> players;
+    public int MAX_COUNT = 4;
+    private List<PlayerEntity> players = new ArrayList<>();
     private List<Connection> roomConnections = new ArrayList<>();
 
     public List<Connection> getRoomConnections() {
@@ -28,29 +29,40 @@ public class Room {
         return roomConnections.size();
     }
 
-    public void addConnection(Connection connection) {
-        roomConnections.add(connection);
-        int randomX = MIN_COORDINATE + (int)(Math.random() * MAX_COORDINATE);
-        int randomY = MIN_COORDINATE + (int)(Math.random() * MAX_COORDINATE);
-        PlayerEntity player = new PlayerEntity(connection.getConnectionId(), randomX, randomY);
-        players.add(player);
+    public void addConnection(Connection connection) throws PlayerToRoomAddingException {
+        if (getCountOfPlayers() < MAX_COUNT || MAX_COUNT == -1) {
+            roomConnections.add(connection);
+            connection.getServer().incrementConnectionCounter();
+            int randomX = MIN_COORDINATE + (int)(Math.random() * MAX_COORDINATE);
+            int randomY = MIN_COORDINATE + (int)(Math.random() * MAX_COORDINATE);
+            PlayerEntity player = new PlayerEntity(connection.getConnectionId(), randomX, randomY);
+            players.add(player);
+        } else {
+            throw new PlayerToRoomAddingException("This room is full, you are late");
+        }
+
     }
 
     public void removeConnection(int connectionId) {
-        Connection connection = getConnection(connectionId);
-        roomConnections.remove(connection);
-        players.remove(getPlayerAndConnectionIndex(connection.getConnectionId()));
+        int index = getPlayerAndConnectionIndex(connectionId);
+        getConnection(connectionId).getServer().decrementConnectionCounter();
+        roomConnections.remove(index);
+        players.remove(index);
     }
 
     public Room(int roomId) {
         this.roomId = roomId;
-        players = new ArrayList<>();
+    }
+
+    public Room(int roomId, int maxCount) {
+        this.roomId = roomId;
+        this.MAX_COUNT = maxCount;
     }
 
     public int getPlayerAndConnectionIndex(int connectionId) {
         int index = -1;
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getId() == connectionId) {
+        for (int i = 0; i < roomConnections.size(); i++) {
+            if (roomConnections.get(i).getConnectionId() == connectionId) {
                 index = i;
                 break;
             }
@@ -59,7 +71,8 @@ public class Room {
     }
 
     public Connection getConnection(int connectionId) {
-        return getRoomConnections().get(getPlayerAndConnectionIndex(connectionId));
+        int index = getPlayerAndConnectionIndex(connectionId);
+        return getRoomConnections().get(index);
     }
 
     public void changedPlayerCoordinates(int playerId, int xCoordinate, int yCoordinate) {
