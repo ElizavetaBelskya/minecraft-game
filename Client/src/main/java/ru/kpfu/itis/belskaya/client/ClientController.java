@@ -9,32 +9,30 @@ import ru.kpfu.itis.belskaya.protocol.messages.*;
 public class ClientController {
 
     private GameFrame frame;
-    private MinecraftPanel panel;
 
     public ClientController(GameFrame frame) {
         this.frame = frame;
-        panel = frame.getMinecraftPanel();
     }
 
     public void putPlayer(Message message) {
         MessagePutPlayer messagePutPlayer = (MessagePutPlayer) message;
-        panel.putPlayer(messagePutPlayer.getPlayerId(), messagePutPlayer.getxCoordinate(), messagePutPlayer.getyCoordinate());
+        frame.getMinecraftPanel().putPlayer(messagePutPlayer.getPlayerId(), messagePutPlayer.getxCoordinate(), messagePutPlayer.getyCoordinate());
     }
 
     public void putBlock(Message message) throws ResourceLoadingException {
         MessagePutBlock messagePutBlock = (MessagePutBlock) message;
         BlockEntity block = new BlockEntity(messagePutBlock.getBlockType(), messagePutBlock.getxCoordinate(), messagePutBlock.getyCoordinate());
-        panel.putBlock(block);
+        frame.getMinecraftPanel().putBlock(block);
     }
 
     public void removeBlock(Message message) {
         MessageDeleteBlock messageDeleteBlock = (MessageDeleteBlock) message;
-        panel.destroyBlock(messageDeleteBlock.getxCoordinate(), messageDeleteBlock.getyCoordinate());
+        frame.getMinecraftPanel().destroyBlock(messageDeleteBlock.getxCoordinate(), messageDeleteBlock.getyCoordinate());
     }
 
     public boolean join(Message message, boolean connected) throws ResourceLoadingException {
         MessageJoinGame messageJoinGame = (MessageJoinGame) message;
-        panel.initPlayers(messageJoinGame.getPlayers());
+        frame.getMinecraftPanel().initPlayers(messageJoinGame.getPlayers());
         if (!connected) {
             connected = true;
             frame.initBlocks(messageJoinGame.getBlocks());

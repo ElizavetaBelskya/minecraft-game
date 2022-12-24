@@ -32,10 +32,10 @@ public class ExplodeListener extends AbstractServerEventListener {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                DeleteBlockListener listener = new DeleteBlockListener();
+                listener.init(server);
                 for (MessageDeleteBlock messageDeleteBlock : messageDeleteBlocks) {
                     try {
-                        DeleteBlockListener listener = new DeleteBlockListener();
-                        listener.init(server);
                         listener.handle(messageDeleteBlock);
                     } catch (MessageWorkException e) {
                         System.out.println("The problem of sending an explosion message...");
