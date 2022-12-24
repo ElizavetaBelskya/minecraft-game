@@ -2,7 +2,6 @@ package ru.kpfu.itis.belskaya.client;
 
 import ru.kpfu.itis.belskaya.exceptions.ResourceLoadingException;
 import ru.kpfu.itis.belskaya.gui.GameFrame;
-import ru.kpfu.itis.belskaya.gui.MinecraftPanel;
 import ru.kpfu.itis.belskaya.protocol.entities.BlockEntity;
 import ru.kpfu.itis.belskaya.protocol.messages.*;
 

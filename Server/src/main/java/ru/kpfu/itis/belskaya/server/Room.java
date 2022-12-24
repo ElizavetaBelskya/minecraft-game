@@ -92,7 +92,9 @@ public class Room {
 
     public void removeBlock(int x, int y) {
         BlockEntity block = findBlockByCoordinates(x, y);
-        blockEntities.remove(block);
+        if (block != null) {
+            blockEntities.remove(block);
+        }
     }
 
     private BlockEntity findBlockByCoordinates(int x, int y) {

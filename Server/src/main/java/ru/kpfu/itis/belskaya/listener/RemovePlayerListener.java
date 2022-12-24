@@ -2,19 +2,24 @@ package ru.kpfu.itis.belskaya.listener;
 
 import ru.kpfu.itis.belskaya.protocol.exceptions.MessageWorkException;
 import ru.kpfu.itis.belskaya.protocol.messages.Message;
+import ru.kpfu.itis.belskaya.server.Connection;
+import ru.kpfu.itis.belskaya.server.Room;
 
 public class RemovePlayerListener extends AbstractServerEventListener {
 
     @Override
     public void handle(Message message) {
-
-        server.removeConnectionFromRoom(message.getRoomId(), message.getConnectionId());
+        int roomId = message.getRoomId();
+        int connectionId = message.getConnectionId();
+        server.removeConnectionFromRoom(roomId, connectionId);
         if (message.getRoomId() != -1) {
-            try {
-                server.sendBroadCastMessage(message);
-            } catch (MessageWorkException e) {
-                System.out.println("The message about the player's exit from the game " +
-                        "has not been sent to all players in the room.");
+            Room room = server.getRoom(roomId);
+            for (Connection connection : room.getRoomConnections()) {
+                try {
+                    connection.getOutputService().writeMessage(message);
+                } catch (MessageWorkException e) {
+                    System.out.println("The problem of sending a message to some users of the " + roomId + "th room");
+                }
             }
         }
     }

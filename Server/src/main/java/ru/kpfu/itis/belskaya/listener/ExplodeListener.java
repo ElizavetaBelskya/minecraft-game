@@ -22,7 +22,7 @@ public class ExplodeListener extends AbstractServerEventListener {
         List<MessageDeleteBlock> messageDeleteBlocks = new ArrayList<>();
         messageDeleteBlocks.add(new MessageDeleteBlock(x, y, roomId, connectionId));
         messageDeleteBlocks.add(new MessageDeleteBlock(x-1, y, roomId, connectionId));
-        messageDeleteBlocks.add(new MessageDeleteBlock(x, y-1, roomId, connectionId));
+        messageDeleteBlocks.add(new MessageDeleteBlock(x,y-1, roomId, connectionId));
         messageDeleteBlocks.add(new MessageDeleteBlock(x+1, y, roomId, connectionId));
         messageDeleteBlocks.add(new MessageDeleteBlock(x, y+1, roomId, connectionId));
         messageDeleteBlocks.add(new MessageDeleteBlock(x-1, y-1, roomId, connectionId));
